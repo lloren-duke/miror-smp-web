@@ -1,375 +1,825 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MiroredSMP - Official Store & Web</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0b0f">
 
-    body {
-      background-color: #0f111a;
-      color: #ffffff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    <title>MIROR SMP — Store</title>
 
-    /* Navbar Header */
-    header {
-      background-color: #161925;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    .brand {
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #00ff88;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+        :root {
+            --bg: #08080b;
+            --panel: #101014;
+            --panel2: #15151b;
+            --border: rgba(255,255,255,.08);
+            --text: #f5f5f7;
+            --muted: #92929c;
+            --purple: #8b5cf6;
+            --purple2: #a78bfa;
+            --green: #4ade80;
+        }
 
-    /* Menu Titik Tiga */
-    .menu-wrapper {
-      position: relative;
-    }
+        body {
+            background:
+                radial-gradient(circle at 50% -20%, rgba(139,92,246,.18), transparent 35%),
+                var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+        }
 
-    .three-dots-btn {
-      background: none;
-      border: none;
-      color: #ffffff;
-      font-size: 1.8rem;
-      cursor: pointer;
-      padding: 5px 10px;
-      border-radius: 8px;
-      transition: background 0.2s;
-    }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
 
-    .three-dots-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
+        /* =========================
+           TOP BAR
+        ========================= */
 
-    /* Dropdown Kategori */
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: 45px;
-      background-color: #1f2333;
-      min-width: 180px;
-      border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      overflow: hidden;
-      flex-direction: column;
-    }
+        header {
+            height: 70px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(8,8,11,.82);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
 
-    .dropdown-menu.active {
-      display: flex;
-    }
+        .menu-btn {
+            width: 44px;
+            height: 44px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 21px;
+            transition: .2s;
+        }
 
-    .dropdown-menu a {
-      color: #e0e0e0;
-      padding: 12px 18px;
-      text-decoration: none;
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: background 0.2s, color 0.2s;
-    }
+        .menu-btn:hover {
+            background: var(--purple);
+        }
 
-    .dropdown-menu a:hover {
-      background-color: #00ff88;
-      color: #0f111a;
-      font-weight: bold;
-    }
+        .brand {
+            margin-left: 15px;
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: .5px;
+        }
 
-    /* Hero Section */
-    .hero {
-      text-align: center;
-      padding: 50px 20px;
-      background: linear-gradient(180deg, #161925 0%, #0f111a 100%);
-    }
+        .brand span {
+            color: var(--purple2);
+        }
 
-    .hero h1 {
-      font-size: 2.2rem;
-      margin-bottom: 10px;
-      color: #ffffff;
-    }
+        /* =========================
+           SIDEBAR
+        ========================= */
 
-    .hero p {
-      color: #a0a5b5;
-      font-size: 1rem;
-      margin-bottom: 25px;
-    }
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            opacity: 0;
+            visibility: hidden;
+            transition: .25s;
+            z-index: 80;
+        }
 
-    .ip-box {
-      display: inline-flex;
-      align-items: center;
-      background: #1f2333;
-      padding: 10px 20px;
-      border-radius: 30px;
-      border: 1px solid #00ff88;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
 
-    .ip-box:active {
-      transform: scale(0.98);
-    }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 285px;
+            background: #0d0d11;
+            border-right: 1px solid var(--border);
+            transform: translateX(-100%);
+            transition: .3s ease;
+            z-index: 100;
+            padding: 24px 18px;
+            overflow-y: auto;
+        }
 
-    .ip-text {
-      color: #00ff88;
-      font-weight: bold;
-      margin-right: 10px;
-    }
+        .sidebar.active {
+            transform: translateX(0);
+        }
 
-    /* Content Container */
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px;
-      width: 100%;
-    }
+        .sidebar-title {
+            font-size: 21px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
 
-    .category-section {
-      margin-bottom: 40px;
-      scroll-margin-top: 80px;
-    }
+        .sidebar-subtitle {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 25px;
+        }
 
-    .category-title {
-      font-size: 1.4rem;
-      margin-bottom: 15px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid #00ff88;
-      display: inline-block;
-    }
+        .nav-title {
+            color: #666672;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 20px 8px 8px;
+        }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-    }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 5px;
+            border-radius: 10px;
+            color: #b8b8c2;
+            transition: .2s;
+        }
 
-    /* Cards */
-    .card {
-      background: #161925;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      transition: transform 0.2s, border-color 0.2s;
-    }
+        .nav-item:hover {
+            background: var(--panel2);
+            color: white;
+        }
 
-    .card:hover {
-      transform: translateY(-5px);
-      border-color: #00ff88;
-    }
+        .nav-item.active {
+            background: rgba(139,92,246,.13);
+            color: var(--purple2);
+        }
 
-    .card h3 {
-      margin-bottom: 10px;
-      color: #ffffff;
-    }
+        .nav-icon {
+            width: 30px;
+            text-align: center;
+        }
 
-    .card .price {
-      color: #00ff88;
-      font-size: 1.2rem;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
+        .close-btn {
+            position: absolute;
+            top: 22px;
+            right: 18px;
+            border: 0;
+            background: transparent;
+            color: #777;
+            font-size: 23px;
+            cursor: pointer;
+        }
 
-    .btn-buy {
-      background: #00ff88;
-      color: #0f111a;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      width: 100%;
-    }
+        /* =========================
+           MAIN
+        ========================= */
 
-    /* Social Links */
-    .social-card {
-      background: #161925;
-      padding: 15px 20px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      text-decoration: none;
-      color: white;
-      margin-bottom: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 55px 20px 80px;
+        }
 
-    .social-card:hover {
-      border-color: #00ff88;
-    }
+        .hero {
+            text-align: center;
+            padding: 45px 10px 35px;
+        }
 
-    /* Notification Toast */
-    #toast {
-      visibility: hidden;
-      min-width: 200px;
-      background-color: #00ff88;
-      color: #0f111a;
-      text-align: center;
-      border-radius: 8px;
-      padding: 12px;
-      position: fixed;
-      z-index: 1000;
-      left: 50%;
-      bottom: 30px;
-      transform: translateX(-50%);
-      font-weight: bold;
-    }
+        .hero .badge {
+            display: inline-block;
+            background: rgba(139,92,246,.12);
+            border: 1px solid rgba(139,92,246,.25);
+            color: var(--purple2);
+            padding: 7px 13px;
+            border-radius: 30px;
+            font-size: 12px;
+            margin-bottom: 18px;
+        }
 
-    #toast.show {
-      visibility: visible;
-      animation: fadein 0.5s, fadeout 0.5s 2.5s;
-    }
+        .hero h1 {
+            font-size: clamp(38px, 8vw, 70px);
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: -2px;
+        }
 
-    @keyframes fadein {
-      from {bottom: 0; opacity: 0;}
-      to {bottom: 30px; opacity: 1;}
-    }
+        .hero h1 span {
+            color: var(--purple2);
+        }
 
-    @keyframes fadeout {
-      from {bottom: 30px; opacity: 1;}
-      to {bottom: 0; opacity: 0;}
-    }
-  </style>
+        .hero p {
+            max-width: 550px;
+            margin: 18px auto 0;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        /* =========================
+           SERVER INFO
+        ========================= */
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .server-card {
+            background: linear-gradient(145deg, #121218, #0e0e12);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+            transition: .2s;
+        }
+
+        .server-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(139,92,246,.35);
+        }
+
+        .server-card .label {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .server-value {
+            font-size: 16px;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .online {
+            color: var(--green);
+        }
+
+        .copy-btn {
+            margin-top: 12px;
+            background: var(--panel2);
+            color: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 11px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .copy-btn:hover {
+            background: var(--purple);
+        }
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 28px 0 50px;
+        }
+
+        .action {
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            transition: .2s;
+        }
+
+        .action:hover {
+            background: var(--purple);
+            border-color: var(--purple);
+            transform: translateY(-2px);
+        }
+
+        /* =========================
+           STORE
+        ========================= */
+
+        .store-header {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .store-header p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .product {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+            transition: .2s;
+        }
+
+        .product:hover {
+            transform: translateY(-4px);
+            border-color: rgba(139,92,246,.4);
+        }
+
+        .product-icon {
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: rgba(139,92,246,.12);
+            font-size: 24px;
+            margin-bottom: 17px;
+        }
+
+        .product h3 {
+            margin-bottom: 7px;
+        }
+
+        .product p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+            min-height: 40px;
+        }
+
+        .price {
+            color: var(--purple2);
+            font-size: 18px;
+            font-weight: 800;
+            margin: 17px 0;
+        }
+
+        .buy {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background: var(--purple);
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .buy:hover {
+            background: #7c3aed;
+        }
+
+        /* =========================
+           CONTACT
+        ========================= */
+
+        .contact {
+            margin-top: 50px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 18px;
+        }
+
+        .contact-item {
+            background: var(--panel2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .contact-item small {
+            display: block;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            border-top: 1px solid var(--border);
+            color: #686872;
+            text-align: center;
+            padding: 25px 15px;
+            font-size: 12px;
+            margin-top: 60px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 0 15px;
+            }
+
+            main {
+                padding-top: 30px;
+            }
+
+            .server-grid,
+            .products,
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                letter-spacing: -1px;
+            }
+
+            .hero {
+                padding-top: 30px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-  <!-- Header & Menu Titik 3 -->
-  <header>
-    <a href="#" class="brand">🎮 MiroredSMP</a>
-    
-    <div class="menu-wrapper">
-      <button class="three-dots-btn" id="menuBtn" onclick="toggleDropdown()">&#8942;</button>
-      
-      <div class="dropdown-menu" id="dropdownMenu">
-        <a href="#rank" onclick="closeDropdown()">💎 Rank</a>
-        <a href="#item" onclick="closeDropdown()">⚔️ Item</a>
-        <a href="#social" onclick="closeDropdown()">🌐 Social</a>
-      </div>
-    </div>
-  </header>
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
-  <!-- Hero Banner -->
-  <section class="hero">
-    <h1>Selamat Datang di MiroredSMP</h1>
-    <p>Dukung server kami dan nikmati berbagai fitur eksklusif!</p>
-    <div class="ip-box" onclick="copyIP('play.miroredsmp.my.id')">
-      <span class="ip-text">IP: play.miroredsmp.my.id</span>
-      <small style="color: #aaa;">(Klik untuk menyalin)</small>
-    </div>
-  </section>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
 
-  <!-- Main Content Categories -->
-  <div class="container">
+        <button class="close-btn" onclick="closeMenu()">×</button>
 
-    <!-- Kategori Rank -->
-    <section id="rank" class="category-section">
-      <h2 class="category-title">💎 Kategori Rank</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>VIP Rank</h3>
-          <p class="price">Rp 15.000</p>
-          <button class="btn-buy" onclick="alert('Beli Rank VIP')">Beli</button>
+        <div class="sidebar-title">
+            MIROR <span style="color:#a78bfa;">SMP</span>
         </div>
-        <div class="card">
-          <h3>MVP Rank</h3>
-          <p class="price">Rp 30.000</p>
-          <button class="btn-buy" onclick="alert('Beli Rank MVP')">Beli</button>
+
+        <div class="sidebar-subtitle">
+            Season 1 • Official Store
         </div>
-        <div class="card">
-          <h3>Sultan Rank</h3>
-          <p class="price">Rp 50.000</p>
-          <button class="btn-buy" onclick="alert('Beli Rank Sultan')">Beli</button>
+
+        <div class="nav-title">Store</div>
+
+        <a href="#rank" class="nav-item active" onclick="closeMenu()">
+            <div class="nav-icon">👑</div>
+            <div>Rank</div>
+        </a>
+
+        <a href="#item" class="nav-item" onclick="closeMenu()">
+            <div class="nav-icon">📦</div>
+            <div>Item</div>
+        </a>
+
+        <div class="nav-title">Community</div>
+
+        <a href="#social" class="nav-item" onclick="closeMenu()">
+            <div class="nav-icon">💬</div>
+            <div>Social</div>
+        </a>
+
+        <a href="#contact" class="nav-item" onclick="closeMenu()">
+            <div class="nav-icon">📞</div>
+            <div>Contact</div>
+        </a>
+
+    </aside>
+
+    <!-- HEADER -->
+    <header>
+
+        <button class="menu-btn" onclick="openMenu()">
+            ☰
+        </button>
+
+        <div class="brand">
+            MIROR <span>SMP</span>
         </div>
-      </div>
-    </section>
 
-    <!-- Kategori Item -->
-    <section id="item" class="category-section">
-      <h2 class="category-title">⚔️ Kategori Item</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>Claim Key x5</h3>
-          <p class="price">Rp 5.000</p>
-          <button class="btn-buy" onclick="alert('Beli Claim Key')">Beli</button>
-        </div>
-        <div class="card">
-          <h3>Custom Sword</h3>
-          <p class="price">Rp 10.000</p>
-          <button class="btn-buy" onclick="alert('Beli Custom Sword')">Beli</button>
-        </div>
-      </div>
-    </section>
+    </header>
 
-    <!-- Kategori Social -->
-    <section id="social" class="category-section">
-      <h2 class="category-title">🌐 Social & Komunitas</h2>
-      <a href="https://discord.gg" target="_blank" class="social-card">
-        <span>💬 Discord Server</span>
-        <small>→</small>
-      </a>
-      <a href="https://whatsapp.com" target="_blank" class="social-card">
-        <span>📱 Grup WhatsApp</span>
-        <small>→</small>
-      </a>
-    </section>
+    <!-- MAIN -->
+    <main>
 
-  </div>
+        <!-- HERO -->
+        <section class="hero">
 
-  <div id="toast">IP Server Berhasil Disalin!</div>
+            <div class="badge">
+                MIROR SMP • SEASON 1
+            </div>
 
-  <script>
-    // Toggle Menu Titik Tiga
-    function toggleDropdown() {
-      const dropdown = document.getElementById('dropdownMenu');
-      dropdown.classList.toggle('active');
-    }
+            <h1>
+                MIROR <span>SMP</span>
+            </h1>
 
-    // Tutup Dropdown saat link diklik
-    function closeDropdown() {
-      document.getElementById('dropdownMenu').classList.remove('active');
-    }
+            <p>
+                Survival • Economy • Community
+                <br>
+                Official Store MIROR SMP Season 1.
+            </p>
 
-    // Tutup Dropdown jika klik di luar menu
-    window.onclick = function(event) {
-      if (!event.target.matches('#menuBtn')) {
-        const dropdown = document.getElementById('dropdownMenu');
-        if (dropdown.classList.contains('active')) {
-          dropdown.classList.remove('active');
+        </section>
+
+        <!-- SERVER INFO -->
+        <section>
+
+            <h2 class="section-title">
+                Server Information
+            </h2>
+
+            <div class="server-grid">
+
+                <div class="server-card">
+                    <div class="label">SERVER IP</div>
+                    <div class="server-value" id="serverIp">
+                        miroredsmp.my.id
+                    </div>
+
+                    <button class="copy-btn" onclick="copyText('play.miroredsmp.my.id')">
+                        Copy IP
+                    </button>
+                </div>
+
+                <div class="server-card">
+                    <div class="label">PORT</div>
+                    <div class="server-value">
+                        2045
+                    </div>
+                </div>
+
+                <div class="server-card">
+                    <div class="label">STATUS</div>
+                    <div class="server-value online">
+                        ● Online
+                    </div>
+                </div>
+
+                <div class="server-card">
+                    <div class="label">VERSION</div>
+                    <div class="server-value">
+                        Java / Bedrock
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="actions">
+
+                <a class="action"
+                   href="https://chat.whatsapp.com/HqUCYohXg105gIWxIAbXEX"
+                   target="_blank">
+                    💬 WhatsApp
+                </a>
+
+                <a class="action"
+                   href="https://discord.gg/"
+                   target="_blank">
+                    Discord
+                </a>
+
+                <a class="action"
+                   href="#vote">
+                    ⭐ Vote Server
+                </a>
+
+            </div>
+
+        </section>
+
+        <!-- RANK -->
+        <section id="rank">
+
+            <div class="store-header">
+                <div>
+                    <h2 class="section-title">Rank</h2>
+                    <p>Upgrade rank dan dapatkan fitur eksklusif.</p>
+                </div>
+            </div>
+
+            <div class="products">
+
+                <div class="product">
+                    <div class="product-icon">⚔️</div>
+                    <h3>Baron</h3>
+                    <p>
+                        Repair, Feed, 5 Home, Kit Baron,
+                        dan $100.000.
+                    </p>
+                    <div class="price">Rp10.000</div>
+                    <a href="#contact" class="buy">BELI SEKARANG</a>
+                </div>
+
+                <div class="product">
+                    <div class="product-icon">🛡️</div>
+                    <h3>Viscount</h3>
+                    <p>
+                        Fitur Baron + Fly, 8 Home,
+                        Kit Viscount, dan $400.000.
+                    </p>
+                    <div class="price">Rp20.000</div>
+                    <a href="#contact" class="buy">BELI SEKARANG</a>
+                </div>
+
+                <div class="product">
+                    <div class="product-icon">👑</div>
+                    <h3>Earl</h3>
+                    <p>
+                        Fitur Viscount + EnderChest,
+                        Heal, 12 Home, dan $1.000.000.
+                    </p>
+                    <div class="price">Rp35.000</div>
+                    <a href="#contact" class="buy">BELI SEKARANG</a>
+                </div>
+
+                <div class="product">
+                    <div class="product-icon">💎</div>
+                    <h3>Marquess</h3>
+                    <p>
+                        Fitur Earl + Nick, Time,
+                        Weather, 18 Home, dan $3.000.000.
+                    </p>
+                    <div class="price">Rp60.000</div>
+                    <a href="#contact" class="buy">BELI SEKARANG</a>
+                </div>
+
+                <div class="product">
+                    <div class="product-icon">🏆</div>
+                    <h3>Duke</h3>
+                    <p>
+                        Fitur Marquess + TP, Effect,
+                        25 Home, dan $6.000.000.
+                    </p>
+                    <div class="price">Rp100.000</div>
+                    <a href="#contact" class="buy">BELI SEKARANG</a>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ITEM -->
+        <section id="item" style="margin-top:55px;">
+
+            <div class="store-header">
+                <div>
+                    <h2 class="section-title">Item</h2>
+                    <p>Item khusus untuk perjalananmu di MIROR SMP.</p>
+                </div>
+            </div>
+
+            <div class="products">
+
+                <div class="product">
+                    <div class="product-icon">🔑</div>
+                    <h3>Miror Key</h3>
+                    <p>
+                        Kunci crate spesial MIROR SMP.
+                    </p>
+                    <div class="price">Rp5.000</div>
+                    <a href="#contact" class="buy">BELI SEKARANG</a>
+                </div>
+
+                <div class="product">
+                    <div class="product-icon">📦</div>
+                    <h3>Crate Key</h3>
+                    <p>
+                        Buka crate dan dapatkan berbagai hadiah.
+                    </p>
+                    <div class="price">Rp10.000</div>
+                    <a href="#contact" class="buy">BELI SEKARANG</a>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- SOCIAL -->
+        <section id="social" class="contact">
+
+            <h2 class="section-title">
+                Social
+            </h2>
+
+            <div class="contact-grid">
+
+                <a class="contact-item"
+                   href="https://chat.whatsapp.com/HqUCYohXg105gIWxIAbXEX"
+                   target="_blank">
+                    <small>WhatsApp</small>
+                    Group MIROR SMP
+                </a>
+
+                <a class="contact-item"
+                   href="https://discord.gg/"
+                   target="_blank">
+                    <small>Discord</small>
+                    MIROR SMP Community
+                </a>
+
+                <a class="contact-item"
+                   href="#vote">
+                    <small>Vote</small>
+                    Support server kami
+                </a>
+
+            </div>
+
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="contact">
+
+            <h2 class="section-title">
+                Contact
+            </h2>
+
+            <div class="contact-grid">
+
+                <div class="contact-item">
+                    <small>Owner</small>
+                    Yoo
+                </div>
+
+                <div class="contact-item">
+                    <small>Email</small>
+                    admin@miroredsmp.my.id
+                </div>
+
+                <div class="contact-item">
+                    <small>WhatsApp</small>
+                    +62 857-4300-3734
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+
+        © 2026 MIROR SMP • Season 1
+        <br>
+        Not affiliated with Mojang Studios.
+
+    </footer>
+
+
+    <script>
+
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        function openMenu() {
+            sidebar.classList.add("active");
+            overlay.classList.add("active");
         }
-      }
-    }
 
-    // Copy IP Address
-    function copyIP(text) {
-      navigator.clipboard.writeText(text);
-      const toast = document.getElementById("toast");
-      toast.className = "show";
-      setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
-    }
-  </script>
+        function closeMenu() {
+            sidebar.classList.remove("active");
+            overlay.classList.remove("active");
+        }
+
+        function copyText(text) {
+
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    alert("IP berhasil disalin!");
+                })
+                .catch(() => {
+                    alert("Gagal menyalin IP.");
+                });
+
+        }
+
+    </script>
+
 </body>
 </html>
