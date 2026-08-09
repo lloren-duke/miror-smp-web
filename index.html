@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiroredSMP - Official Minecraft Server</title>
+    <!-- Font & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #0a0b10;
+            --card-bg: rgba(22, 25, 38, 0.7);
+            --primary: #7c3aed;
+            --primary-hover: #6d28d9;
+            --accent: #00f2fe;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 242, 254, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            backdrop-filter: blur(12px);
+            background: rgba(10, 11, 16, 0.8);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 10rem 8% 5rem 8%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .badge {
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px solid var(--primary);
+            color: #c4b5fd;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            background: linear-gradient(180deg, #ffffff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+        }
+
+        /* IP Box */
+        .ip-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .ip-info {
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        .ip-info span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ip-info h3 {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .btn-copy {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-copy:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 8%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(124, 58, 237, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Server Specs Box */
+        .specs {
+            padding: 3rem 8%;
+            margin: 0 8% 5rem 8%;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(0, 242, 254, 0.05));
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .spec-item h4 {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .spec-item p {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .nav-links { display: none; }
+            .ip-card { flex-direction: column; text-align: center; }
+            .ip-info { text-align: center; }
+            .btn-copy { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">
+            <i class="fa-solid fa-cube"></i> MIRORED SMP
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#features">Fitur</a></li>
+            <li><a href="#info">Informasi</a></li>
+            <li><a href="https://discord.gg/yourlink" target="_blank">Discord</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="badge">🎮 Cross-Play Java & Bedrock</div>
+        <h1>Selamat Datang di<br>MiroredSMP</h1>
+        <p>Jelajahi dunia survival multiplayer yang seru, komunitas ramah, dan pengalaman mabar lintas platform tanpa batas.</p>
+
+        <!-- IP Card -->
+        <div class="ip-card">
+            <div class="ip-info">
+                <span>Server Address</span>
+                <h3 id="server-ip">miroredsmp.my.id</h3>
+            </div>
+            <button class="btn-copy" onclick="copyIP()">
+                <i class="fa-regular fa-copy"></i> <span id="btn-text">Salin IP</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Specs Summary -->
+    <div class="specs" id="info">
+        <div class="spec-item">
+            <h4>IP JAVA & BEDROCK</h4>
+            <p>miroredsmp.my.id</p>
+        </div>
+        <div class="spec-item">
+            <h4>PORT BEDROCK</h4>
+            <p>2045</p>
+        </div>
+        <div class="spec-item">
+            <h4>VERSI GAME</h4>
+            <p>1.20.x - Latest</p>
+        </div>
+        <div class="spec-item">
+            <h4>AKSES</h4>
+            <p>Premium & Cracked</p>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="feature-card">
+            <i class="fa-solid fa-mobile-screen-button feature-icon"></i>
+            <h3>Cross-Play System</h3>
+            <p>Bisa main bareng dari PC (Java Edition) maupun HP/Tablet/Console (Bedrock Edition) dalam satu dunia yang sama.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa-solid fa-shield-halved feature-icon"></i>
+            <h3>Anti-Grief & Fair Play</h3>
+            <p>Bangunan dan barang kamu aman dengan sistem proteksi area. Dilarang keras cheating atau mengganggu player lain.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fa-solid fa-users feature-icon"></i>
+            <h3>Komunitas Aktif</h3>
+            <p>Nongkrong, bikin guild, dagang item, atau sekadar eksplorasi bareng member lain yang ramah di WhatsApp & Discord.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 MiroredSMP. Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</p>
+    </footer>
+
+    <!-- Copy Script -->
+    <script>
+        function copyIP() {
+            const ip = "miroredsmp.my.id";
+            navigator.clipboard.writeText(ip);
+            
+            const btnText = document.getElementById("btn-text");
+            btnText.innerText = "Tersalin!";
+            
+            setTimeout(() => {
+                btnText.innerText = "Salin IP";
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
