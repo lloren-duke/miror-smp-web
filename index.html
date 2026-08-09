@@ -1,1620 +1,1592 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#08080b">
-
-    <title>MIROR SMP — Store</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --bg: #08080b;
-            --panel: #101014;
-            --panel2: #15151b;
-            --border: rgba(255,255,255,.08);
-            --text: #f5f5f7;
-            --muted: #92929c;
-            --purple: #8b5cf6;
-            --purple2: #a78bfa;
-            --green: #4ade80;
-            --red: #f87171;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08080d">
+
+<title>MIROR SMP — Store</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #08080d;
+    --card: #101018;
+    --card2: #151522;
+    --purple: #7c3aed;
+    --purple2: #a855f7;
+    --text: #fff;
+    --muted: #9292a5;
+    --border: rgba(255,255,255,.08);
+    --green: #22c55e;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(
+            circle at 50% -15%,
+            rgba(124,58,237,.18),
+            transparent 38%
+        ),
+        var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+body.no-scroll {
+    overflow: hidden;
+}
+
+button,
+a {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* =========================
+   PAGE LOAD
+========================= */
+
+body {
+    animation: pageIn .45s ease-out;
+}
+
+@keyframes pageIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.menu-btn {
+    position: fixed;
+    top: 18px;
+    left: 18px;
 
-        body {
-            background:
-                radial-gradient(
-                    circle at 50% -20%,
-                    rgba(139,92,246,.18),
-                    transparent 35%
-                ),
-                var(--bg);
+    width: 45px;
+    height: 45px;
 
-            color: var(--text);
-            font-family: Arial, Helvetica, sans-serif;
-            min-height: 100vh;
-        }
+    border: 1px solid var(--border);
+    border-radius: 12px;
 
-        body.no-scroll {
-            overflow: hidden;
-        }
+    background: rgba(10,10,15,.82);
+    color: white;
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+    font-size: 21px;
 
-        button {
-            font-family: inherit;
-        }
+    z-index: 1000;
 
-        /* =========================
-           HEADER
-        ========================= */
+    backdrop-filter: blur(15px);
 
-        header {
-            height: 70px;
-            border-bottom: 1px solid var(--border);
-            background: rgba(8,8,11,.82);
-            backdrop-filter: blur(15px);
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease;
+}
 
-            display: flex;
-            align-items: center;
+.menu-btn:hover {
+    background: var(--purple);
+    border-color: var(--purple);
 
-            padding: 0 25px;
+    transform: scale(1.05);
+}
 
-            position: sticky;
-            top: 0;
+.menu-btn:active {
+    transform: scale(.94);
+}
 
-            z-index: 50;
-        }
+.sidebar {
+    position: fixed;
 
-        .menu-btn {
-            width: 44px;
-            height: 44px;
+    top: 0;
+    left: -290px;
 
-            border: 1px solid var(--border);
-            background: var(--panel);
+    width: 275px;
+    height: 100vh;
 
-            color: white;
+    background: #0d0d14;
 
-            border-radius: 12px;
+    border-right: 1px solid var(--border);
 
-            cursor: pointer;
+    z-index: 1100;
 
-            font-size: 21px;
+    padding: 80px 20px 25px;
 
-            transition: .2s;
-        }
+    transition:
+        left .28s cubic-bezier(.22,.8,.25,1);
 
-        .menu-btn:hover {
-            background: var(--purple);
-            border-color: var(--purple);
-        }
+    overflow-y: auto;
+}
 
-        .brand {
-            margin-left: 15px;
+.sidebar.active {
+    left: 0;
+}
 
-            font-size: 19px;
-            font-weight: 800;
+.sidebar h2 {
+    font-size: 22px;
+    margin-bottom: 5px;
+}
 
-            letter-spacing: .5px;
-        }
+.sidebar-subtitle {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 28px;
+}
 
-        .brand span {
-            color: var(--purple2);
-        }
+.sidebar-title {
+    color: #666672;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 20px 5px 9px;
+}
 
-        /* =========================
-           SIDEBAR
-        ========================= */
+.sidebar-item {
+    width: 100%;
 
-        .overlay {
-            position: fixed;
-            inset: 0;
+    display: flex;
+    align-items: center;
 
-            background: rgba(0,0,0,.6);
+    gap: 12px;
 
-            opacity: 0;
-            visibility: hidden;
+    padding: 13px;
 
-            transition: .25s;
+    margin-bottom: 7px;
 
-            z-index: 80;
-        }
+    border: 0;
+    border-radius: 10px;
 
-        .overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+    background: var(--card2);
 
-        .sidebar {
-            position: fixed;
+    color: #ddd;
 
-            left: 0;
-            top: 0;
-            bottom: 0;
+    text-align: left;
 
-            width: 285px;
+    font-size: 14px;
 
-            background: #0d0d11;
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        color .18s ease;
+}
 
-            border-right: 1px solid var(--border);
+.sidebar-item:hover {
+    background: var(--purple);
+    color: white;
 
-            transform: translateX(-100%);
+    transform: translateX(4px);
+}
 
-            transition: .3s ease;
+.sidebar-icon {
+    width: 25px;
+    text-align: center;
+}
 
-            z-index: 100;
+/* =========================
+   MUSIC
+========================= */
 
-            padding: 24px 18px;
+.music-player {
+    position: fixed;
 
-            overflow-y: auto;
-        }
+    top: 20px;
+    left: 50%;
 
-        .sidebar.active {
-            transform: translateX(0);
-        }
+    transform: translateX(-50%);
 
-        .sidebar-title {
-            font-size: 21px;
-            font-weight: 800;
-            margin-bottom: 5px;
-        }
+    width: 48px;
+    height: 42px;
 
-        .sidebar-title span {
-            color: var(--purple2);
-        }
+    background: rgba(15,15,22,.94);
 
-        .sidebar-subtitle {
-            color: var(--muted);
-            font-size: 12px;
-            margin-bottom: 25px;
-        }
+    border: 1px solid var(--border);
+    border-radius: 12px;
 
-        .close-btn {
-            position: absolute;
+    display: flex;
+    align-items: center;
 
-            top: 20px;
-            right: 18px;
+    overflow: hidden;
 
-            border: 0;
+    z-index: 900;
 
-            background: transparent;
+    cursor: pointer;
 
-            color: #777;
+    backdrop-filter: blur(15px);
 
-            font-size: 25px;
+    transition:
+        width .28s cubic-bezier(.22,.8,.25,1),
+        box-shadow .2s ease;
+}
 
-            cursor: pointer;
-        }
+.music-player:hover {
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.25);
+}
 
-        .close-btn:hover {
-            color: white;
-        }
+.music-player.active {
+    width: 310px;
+}
 
-        .nav-title {
-            color: #666672;
+.music-icon {
+    min-width: 48px;
 
-            font-size: 11px;
-            font-weight: 700;
+    text-align: center;
 
-            text-transform: uppercase;
-            letter-spacing: 1px;
+    color: var(--purple2);
 
-            margin: 20px 8px 8px;
-        }
+    font-size: 20px;
 
-        .nav-item {
-            display: flex;
-            align-items: center;
+    animation: musicPulse 1.6s ease-in-out infinite;
+}
 
-            gap: 12px;
+@keyframes musicPulse {
+    0%,100% {
+        transform: scale(1);
+    }
 
-            padding: 12px;
+    50% {
+        transform: scale(1.12);
+    }
+}
 
-            margin-bottom: 5px;
+.music-info {
+    flex: 1;
+    min-width: 0;
 
-            border-radius: 10px;
+    opacity: 0;
 
-            color: #b8b8c2;
+    transition:
+        opacity .18s ease;
+}
 
-            transition: .2s;
-        }
+.music-player.active .music-info {
+    opacity: 1;
+}
 
-        .nav-item:hover {
-            background: var(--panel2);
-            color: white;
-        }
+.music-title {
+    font-size: 12px;
+    font-weight: bold;
 
-        .nav-icon {
-            width: 30px;
-            text-align: center;
-        }
+    white-space: nowrap;
 
-        /* =========================
-           MAIN
-        ========================= */
+    overflow: hidden;
 
-        main {
-            max-width: 1100px;
+    text-overflow: ellipsis;
+}
 
-            margin: auto;
+.music-status {
+    color: var(--muted);
 
-            padding: 55px 20px 80px;
-        }
+    font-size: 10px;
 
-        /* =========================
-           HERO
-        ========================= */
+    margin-top: 3px;
+}
 
-        .hero {
-            text-align: center;
+.music-control {
+    width: 35px;
+    height: 30px;
 
-            padding: 45px 10px 35px;
-        }
+    margin-right: 7px;
 
-        .badge {
-            display: inline-block;
+    border: 0;
+    border-radius: 8px;
 
-            background: rgba(139,92,246,.12);
+    background: var(--purple);
 
-            border: 1px solid rgba(139,92,246,.25);
+    color: white;
 
-            color: var(--purple2);
+    opacity: 0;
 
-            padding: 7px 13px;
+    transition:
+        opacity .18s ease,
+        transform .15s ease;
+}
 
-            border-radius: 30px;
+.music-player.active .music-control {
+    opacity: 1;
+}
 
-            font-size: 12px;
+.music-control:hover {
+    background: #6d28d9;
+}
 
-            margin-bottom: 18px;
-        }
+.music-control:active {
+    transform: scale(.9);
+}
 
-        .hero h1 {
-            font-size: clamp(38px, 8vw, 70px);
+/* =========================
+   HERO
+========================= */
 
-            line-height: 1;
+.hero {
+    min-height: 650px;
 
-            font-weight: 900;
+    padding:
+        105px 20px
+        70px;
 
-            letter-spacing: -2px;
-        }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-        .hero h1 span {
-            color: var(--purple2);
-        }
+    text-align: center;
+}
 
-        .hero p {
-            max-width: 550px;
+.slideshow {
+    width: min(100%, 900px);
+    height: 360px;
 
-            margin: 18px auto 0;
+    margin-bottom: 40px;
 
-            color: var(--muted);
+    overflow: hidden;
 
-            line-height: 1.6;
+    border-radius: 22px;
 
-            font-size: 15px;
-        }
+    border: 1px solid var(--border);
 
-        /* =========================
-           SERVER
-        ========================= */
+    background: #111;
 
-        .section-title {
-            font-size: 22px;
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.35);
 
-            margin-bottom: 7px;
-        }
+    animation:
+        heroImageIn .55s ease-out;
+}
 
-        .section-description {
-            color: var(--muted);
+@keyframes heroImageIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.985);
+    }
 
-            font-size: 13px;
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
 
-            margin-bottom: 16px;
-        }
+.slide {
+    width: 100%;
+    height: 100%;
 
-        .server-grid {
-            display: grid;
+    object-fit: cover;
 
-            grid-template-columns: repeat(2, 1fr);
+    display: none;
+}
 
-            gap: 12px;
-        }
+.slide.active {
+    display: block;
 
-        .server-card {
-            background:
-                linear-gradient(
-                    145deg,
-                    #121218,
-                    #0e0e12
-                );
+    animation:
+        slideFade .45s ease-out;
+}
 
-            border: 1px solid var(--border);
+@keyframes slideFade {
+    from {
+        opacity: .45;
+        transform: scale(1.025);
+    }
 
-            border-radius: 15px;
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
 
-            padding: 20px;
+.hero h1 {
+    font-size: clamp(40px, 8vw, 70px);
 
-            transition: .2s;
-        }
+    line-height: 1;
 
-        .server-card:hover {
-            transform: translateY(-2px);
+    font-weight: 900;
 
-            border-color: rgba(139,92,246,.35);
-        }
+    letter-spacing: -2px;
 
-        .label {
-            color: var(--muted);
+    background:
+        linear-gradient(
+            90deg,
+            #fff,
+            #a855f7
+        );
 
-            font-size: 12px;
+    -webkit-background-clip: text;
 
-            margin-bottom: 8px;
-        }
+    color: transparent;
 
-        .server-value {
-            font-size: 16px;
+    margin-bottom: 14px;
 
-            font-weight: 700;
+    animation:
+        textUp .5s .08s ease-out both;
+}
 
-            word-break: break-word;
-        }
+.hero-description {
+    max-width: 600px;
 
-        .online {
-            color: var(--green);
-        }
+    color: var(--muted);
 
-        .copy-btn {
-            margin-top: 12px;
+    line-height: 1.7;
 
-            background: var(--panel2);
+    font-size: 14px;
 
-            color: white;
+    margin-bottom: 30px;
 
-            border: 1px solid var(--border);
+    animation:
+        textUp .5s .15s ease-out both;
+}
 
-            border-radius: 8px;
+@keyframes textUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
 
-            padding: 7px 11px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-            cursor: pointer;
+/* =========================
+   SERVER INFO
+========================= */
 
-            font-size: 12px;
-        }
+.server-info {
+    width: min(100%, 850px);
 
-        .copy-btn:hover {
-            background: var(--purple);
-        }
+    display: grid;
 
-        /* =========================
-           ACTIONS
-        ========================= */
+    grid-template-columns:
+        repeat(3, 1fr);
 
-        .actions {
-            display: flex;
+    gap: 12px;
 
-            justify-content: center;
+    animation:
+        textUp .5s .22s ease-out both;
+}
 
-            flex-wrap: wrap;
+.info-box {
+    background: var(--card);
 
-            gap: 10px;
+    border: 1px solid var(--border);
 
-            margin: 28px 0 50px;
-        }
+    border-radius: 14px;
 
-        .action {
-            padding: 12px 18px;
+    padding: 18px;
 
-            border-radius: 10px;
+    text-align: left;
 
-            border: 1px solid var(--border);
+    transition:
+        transform .2s ease,
+        border-color .2s ease;
+}
 
-            background: var(--panel);
+.info-box:hover {
+    transform: translateY(-3px);
 
-            color: white;
+    border-color:
+        rgba(168,85,247,.35);
+}
 
-            font-weight: 700;
+.info-box span {
+    display: block;
 
-            font-size: 13px;
+    color: var(--muted);
 
-            transition: .2s;
-        }
+    font-size: 11px;
 
-        .action:hover {
-            background: var(--purple);
+    margin-bottom: 8px;
+}
 
-            border-color: var(--purple);
+.info-box strong {
+    display: block;
 
-            transform: translateY(-2px);
-        }
+    font-size: 14px;
 
-        /* =========================
-           PRODUCTS
-        ========================= */
+    word-break: break-word;
+}
 
-        .products {
-            display: grid;
+/* =========================
+   CONTENT
+========================= */
 
-            grid-template-columns: repeat(3, 1fr);
+section {
+    width: min(1100px, 92%);
 
-            gap: 14px;
-        }
+    margin: auto;
 
-        .product {
-            background: var(--panel);
+    padding: 65px 0;
+}
 
-            border: 1px solid var(--border);
+.section-title {
+    margin-bottom: 28px;
+}
 
-            border-radius: 15px;
+.section-title h2 {
+    font-size: 30px;
+}
 
-            padding: 20px;
+.section-title p {
+    color: var(--muted);
 
-            transition: .2s;
-        }
+    font-size: 13px;
 
-        .product:hover {
-            transform: translateY(-4px);
+    margin-top: 7px;
+}
 
-            border-color: rgba(139,92,246,.4);
-        }
+/* =========================
+   PRODUCTS
+========================= */
 
-        .product-icon {
-            width: 50px;
-            height: 50px;
+.products {
+    display: grid;
 
-            display: grid;
-            place-items: center;
+    grid-template-columns:
+        repeat(auto-fit, minmax(210px, 1fr));
 
-            border-radius: 12px;
+    gap: 16px;
+}
 
-            background: rgba(139,92,246,.12);
+.product {
+    background:
+        linear-gradient(
+            145deg,
+            #111119,
+            #0d0d13
+        );
 
-            font-size: 24px;
+    border: 1px solid var(--border);
 
-            margin-bottom: 17px;
-        }
+    border-radius: 16px;
 
-        .product h3 {
-            margin-bottom: 7px;
-        }
+    padding: 23px;
 
-        .product p {
-            color: var(--muted);
+    transition:
+        transform .2s cubic-bezier(.22,.8,.25,1),
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
 
-            font-size: 13px;
+.product:hover {
+    transform: translateY(-5px);
 
-            line-height: 1.5;
+    border-color:
+        rgba(168,85,247,.45);
 
-            min-height: 40px;
-        }
+    box-shadow:
+        0 14px 35px rgba(0,0,0,.2);
+}
 
-        .price {
-            color: var(--purple2);
+.product-icon {
+    width: 48px;
+    height: 48px;
 
-            font-size: 18px;
+    display: grid;
+    place-items: center;
 
-            font-weight: 800;
+    border-radius: 12px;
 
-            margin: 17px 0;
-        }
+    background:
+        rgba(124,58,237,.13);
 
-        .buy {
-            display: block;
+    font-size: 22px;
 
-            width: 100%;
+    margin-bottom: 17px;
 
-            text-align: center;
+    transition:
+        transform .2s ease;
+}
 
-            padding: 10px;
+.product:hover .product-icon {
+    transform:
+        translateY(-2px)
+        scale(1.05);
+}
 
-            background: var(--purple);
+.product h3 {
+    font-size: 21px;
 
-            border-radius: 9px;
+    margin-bottom: 9px;
+}
 
-            font-size: 13px;
+.product-description {
+    color: var(--muted);
 
-            font-weight: 800;
+    font-size: 12px;
 
-            border: 0;
+    line-height: 1.6;
 
-            color: white;
+    min-height: 58px;
+}
 
-            cursor: pointer;
-        }
+.price {
+    color: var(--purple2);
 
-        .buy:hover {
-            background: #7c3aed;
-        }
+    font-size: 22px;
 
-        /* =========================
-           CONTACT
-        ========================= */
+    font-weight: 800;
 
-        .contact {
-            margin-top: 50px;
+    margin:
+        17px
+        0;
+}
 
-            background: var(--panel);
+.product-btn {
+    width: 100%;
 
-            border: 1px solid var(--border);
+    padding: 12px;
 
-            border-radius: 16px;
+    border: 0;
 
-            padding: 25px;
-        }
+    border-radius: 9px;
 
-        .contact-grid {
-            display: grid;
+    background: var(--purple);
 
-            grid-template-columns: repeat(3, 1fr);
+    color: white;
 
-            gap: 15px;
+    font-weight: bold;
 
-            margin-top: 18px;
-        }
+    font-size: 12px;
 
-        .contact-item {
-            background: var(--panel2);
+    transition:
+        transform .15s ease,
+        background .18s ease;
+}
 
-            padding: 15px;
+.product-btn:hover {
+    background: var(--purple2);
 
-            border-radius: 10px;
-        }
+    transform: translateY(-1px);
+}
 
-        .contact-item small {
-            display: block;
+.product-btn:active {
+    transform: scale(.97);
+}
 
-            color: var(--muted);
+.product-btn:disabled {
+    background: #272733;
 
-            margin-bottom: 5px;
-        }
+    color: #777;
 
-        /* =========================
-           MODAL
-        ========================= */
+    cursor: not-allowed;
 
-        .modal-overlay {
-            position: fixed;
+    transform: none;
+}
 
-            inset: 0;
+/* =========================
+   SOCIAL
+========================= */
 
-            background: rgba(0,0,0,.75);
+.social {
+    display: grid;
 
-            backdrop-filter: blur(7px);
+    grid-template-columns:
+        repeat(auto-fit, minmax(200px, 1fr));
 
-            display: none;
+    gap: 14px;
+}
 
-            align-items: center;
+.social-card {
+    background: var(--card);
 
-            justify-content: center;
+    border: 1px solid var(--border);
 
-            padding: 20px;
+    border-radius: 14px;
 
-            z-index: 200;
-        }
+    padding: 20px;
 
-        .modal-overlay.active {
-            display: flex;
-        }
+    transition:
+        transform .2s ease,
+        border-color .2s ease;
+}
 
-        .modal {
-            width: 100%;
+.social-card:hover {
+    border-color:
+        rgba(168,85,247,.4);
 
-            max-width: 440px;
+    transform: translateY(-3px);
+}
 
-            max-height: 90vh;
+.social-card small {
+    color: var(--muted);
 
-            overflow-y: auto;
+    display: block;
 
-            background: #101014;
+    font-size: 11px;
 
-            border: 1px solid rgba(139,92,246,.3);
+    margin-bottom: 6px;
+}
 
-            border-radius: 18px;
+/* =========================
+   CONTACT
+========================= */
 
-            padding: 25px;
+.contact-box {
+    background: var(--card);
 
-            position: relative;
+    border: 1px solid var(--border);
 
-            box-shadow:
-                0 20px 80px rgba(0,0,0,.6);
+    border-radius: 17px;
 
-            animation: modalIn .2s ease;
-        }
+    padding: 25px;
+}
 
-        @keyframes modalIn {
+.contact-row {
+    padding: 13px 0;
 
-            from {
-                opacity: 0;
+    border-bottom:
+        1px solid var(--border);
+}
 
-                transform:
-                    translateY(15px)
-                    scale(.97);
-            }
+.contact-row:last-child {
+    border-bottom: 0;
+}
 
-            to {
-                opacity: 1;
+.contact-row span {
+    color: var(--muted);
 
-                transform:
-                    translateY(0)
-                    scale(1);
-            }
+    display: block;
 
-        }
+    font-size: 11px;
 
-        .modal-close {
-            position: absolute;
+    margin-bottom: 4px;
+}
 
-            right: 17px;
+/* =========================
+   MODAL
+========================= */
 
-            top: 14px;
+.modal {
+    position: fixed;
 
-            background: transparent;
+    inset: 0;
 
-            border: 0;
+    display: none;
 
-            color: #777;
+    align-items: center;
 
-            font-size: 25px;
+    justify-content: center;
 
-            cursor: pointer;
-        }
+    padding: 20px;
 
-        .modal-close:hover {
-            color: white;
-        }
+    background:
+        rgba(0,0,0,.78);
 
-        .modal-label {
-            color: var(--purple2);
+    backdrop-filter: blur(7px);
 
-            font-size: 12px;
+    z-index: 2000;
 
-            font-weight: 800;
+    animation: modalBg .2s ease;
+}
 
-            text-transform: uppercase;
+.modal.active {
+    display: flex;
+}
 
-            letter-spacing: 1px;
+@keyframes modalBg {
+    from {
+        opacity: 0;
+    }
 
-            margin-bottom: 5px;
-        }
+    to {
+        opacity: 1;
+    }
+}
 
-        .modal-title {
-            font-size: 28px;
+.modal-box {
+    width: min(450px, 100%);
 
-            font-weight: 900;
+    max-height: 90vh;
 
-            margin-bottom: 18px;
-        }
+    overflow-y: auto;
 
-        .benefits {
-            display: flex;
+    background: #11111a;
 
-            flex-direction: column;
+    border:
+        1px solid
+        rgba(168,85,247,.25);
 
-            gap: 8px;
+    border-radius: 18px;
 
-            margin-bottom: 20px;
-        }
+    padding: 25px;
 
-        .benefit {
-            background: var(--panel2);
+    box-shadow:
+        0 25px 80px
+        rgba(0,0,0,.6);
 
-            border: 1px solid rgba(255,255,255,.05);
+    animation:
+        modalIn .23s cubic-bezier(.22,.8,.25,1);
+}
 
-            border-radius: 9px;
+@keyframes modalIn {
+    from {
+        opacity: 0;
 
-            padding: 11px 13px;
+        transform:
+            translateY(14px)
+            scale(.97);
+    }
 
-            font-size: 13px;
+    to {
+        opacity: 1;
 
-            color: #d5d5dc;
-        }
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
 
-        .benefit::before {
-            content: "✓";
+.close {
+    float: right;
 
-            color: var(--purple2);
+    background: transparent;
 
-            font-weight: bold;
+    border: 0;
 
-            margin-right: 9px;
-        }
+    color: #777;
 
-        .modal-price {
-            color: var(--purple2);
+    font-size: 25px;
 
-            font-size: 21px;
+    transition:
+        color .15s ease,
+        transform .15s ease;
+}
 
-            font-weight: 900;
+.close:hover {
+    color: white;
 
-            margin-bottom: 15px;
-        }
+    transform: rotate(5deg);
+}
 
-        /* =========================
-           QR PAYMENT
-        ========================= */
+.modal-label {
+    color: var(--purple2);
 
-        .payment-info {
-            text-align: center;
-        }
+    font-size: 11px;
 
-        .payment-title {
-            font-size: 25px;
+    font-weight: bold;
 
-            font-weight: 900;
+    text-transform: uppercase;
 
-            margin-bottom: 5px;
-        }
+    letter-spacing: 1px;
 
-        .payment-subtitle {
-            color: var(--muted);
+    margin-bottom: 6px;
+}
 
-            font-size: 13px;
+.modal-box h2 {
+    font-size: 28px;
 
-            line-height: 1.5;
+    margin-bottom: 17px;
+}
 
-            margin-bottom: 18px;
-        }
+.benefits {
+    color: #d4d4dc;
 
-        .qr-wrapper {
-            width: 230px;
+    font-size: 13px;
 
-            height: 230px;
+    line-height: 1.9;
 
-            margin: 0 auto 18px;
+    margin-bottom: 18px;
+}
 
-            background: white;
+.benefit {
+    background: var(--card2);
 
-            border-radius: 12px;
+    border: 1px solid var(--border);
 
-            padding: 10px;
+    border-radius: 8px;
 
-            display: flex;
+    padding: 8px 11px;
 
-            align-items: center;
+    margin-bottom: 7px;
 
-            justify-content: center;
-        }
+    animation:
+        benefitIn .2s ease both;
+}
 
-        .qr-wrapper img {
-            width: 100%;
+@keyframes benefitIn {
+    from {
+        opacity: 0;
+        transform: translateX(-6px);
+    }
 
-            height: 100%;
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 
-            object-fit: contain;
+.benefit::before {
+    content: "✓";
 
-            border-radius: 5px;
-        }
+    color: var(--purple2);
 
-        .amount-box {
-            background: var(--panel2);
+    font-weight: bold;
 
-            border: 1px solid var(--border);
+    margin-right: 8px;
+}
 
-            border-radius: 11px;
+.modal-price {
+    color: var(--purple2);
 
-            padding: 13px;
+    font-size: 22px;
 
-            margin-bottom: 16px;
-        }
+    font-weight: 900;
 
-        .amount-box small {
-            display: block;
+    margin-bottom: 16px;
+}
 
-            color: var(--muted);
+.buy-btn {
+    width: 100%;
 
-            font-size: 11px;
+    padding: 13px;
 
-            margin-bottom: 5px;
-        }
+    border: 0;
 
-        .amount {
-            color: var(--purple2);
+    border-radius: 10px;
 
-            font-size: 25px;
+    background: var(--green);
 
-            font-weight: 900;
-        }
+    color: white;
 
-        .payment-note {
-            color: #aaaab4;
+    font-weight: bold;
 
-            font-size: 12px;
+    transition:
+        transform .15s ease,
+        background .18s ease;
+}
 
-            line-height: 1.5;
+.buy-btn:hover {
+    background: #16a34a;
 
-            margin-bottom: 17px;
-        }
+    transform: translateY(-1px);
+}
 
-        .paid-btn {
-            width: 100%;
+.buy-btn:active {
+    transform: scale(.98);
+}
 
-            background: #25d366;
+/* =========================
+   QRIS
+========================= */
 
-            color: white;
+.qris-img {
+    width: 100%;
 
-            border: 0;
+    max-width: 320px;
 
-            border-radius: 10px;
+    display: block;
 
-            padding: 13px;
+    margin:
+        20px auto;
 
-            font-size: 14px;
+    padding: 10px;
 
-            font-weight: 800;
+    background: white;
 
-            cursor: pointer;
+    border-radius: 14px;
 
-            transition: .2s;
-        }
+    animation:
+        qrIn .3s ease-out;
+}
 
-        .paid-btn:hover {
-            background: #20bd5b;
+@keyframes qrIn {
+    from {
+        opacity: 0;
+        transform: scale(.96);
+    }
 
-            transform: translateY(-1px);
-        }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
 
-        .back-btn {
-            width: 100%;
+.qris-note {
+    text-align: center;
 
-            background: transparent;
+    color: var(--muted);
 
-            color: #999;
+    font-size: 12px;
 
-            border: 0;
+    line-height: 1.7;
 
-            margin-top: 10px;
+    margin-bottom: 17px;
+}
 
-            padding: 9px;
+/* =========================
+   FOOTER
+========================= */
 
-            cursor: pointer;
+footer {
+    border-top:
+        1px solid var(--border);
 
-            font-size: 12px;
-        }
+    text-align: center;
 
-        .back-btn:hover {
-            color: white;
-        }
+    color: var(--muted);
 
-        /* =========================
-           FOOTER
-        ========================= */
+    padding: 30px 20px;
 
-        footer {
-            border-top: 1px solid var(--border);
+    font-size: 11px;
+}
 
-            color: #686872;
+/* =========================
+   MOBILE
+========================= */
 
-            text-align: center;
+@media (max-width: 650px) {
 
-            padding: 25px 15px;
+    .music-player.active {
+        width:
+            calc(100vw - 30px);
+    }
 
-            font-size: 12px;
+    .hero {
+        padding-top: 90px;
+    }
 
-            margin-top: 60px;
-        }
+    .slideshow {
+        height: 230px;
+    }
 
-        /* =========================
-           MOBILE
-        ========================= */
+    .server-info {
+        grid-template-columns: 1fr;
+    }
 
-        @media (max-width: 700px) {
+    .hero h1 {
+        letter-spacing: -1px;
+    }
 
-            header {
-                padding: 0 15px;
-            }
-
-            main {
-                padding-top: 30px;
-            }
-
-            .server-grid,
-            .products,
-            .contact-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero {
-                padding-top: 30px;
-            }
-
-            .hero h1 {
-                letter-spacing: -1px;
-            }
-
-            .qr-wrapper {
-                width: 210px;
-                height: 210px;
-            }
-
-        }
-    </style>
+}
+</style>
 </head>
 
 <body>
 
-    <!-- SIDEBAR OVERLAY -->
-    <div
-        class="overlay"
-        id="overlay"
-        onclick="closeMenu()">
+<!-- =========================
+     MUSIC
+========================= -->
+
+<audio
+    id="bgMusic"
+    loop
+    preload="auto">
+
+    <source
+        src="music.mp3"
+        type="audio/mpeg">
+
+</audio>
+
+
+<div
+    class="music-player"
+    id="musicPlayer"
+    onclick="toggleMusicPanel()">
+
+    <div class="music-icon">
+        ♪
+    </div>
+
+    <div class="music-info">
+
+        <div class="music-title">
+            MIROR SMP — Theme
+        </div>
+
+        <div
+            class="music-status"
+            id="musicStatus">
+
+            Loading...
+
+        </div>
+
+    </div>
+
+    <button
+        class="music-control"
+        id="musicControl"
+        onclick="toggleMusic(event)">
+
+        ▶
+
+    </button>
+
+</div>
+
+
+<!-- =========================
+     MENU
+========================= -->
+
+<button
+    class="menu-btn"
+    onclick="toggleSidebar()">
+
+    ☰
+
+</button>
+
+
+<aside
+    class="sidebar"
+    id="sidebar">
+
+    <h2>
+        MIROR SMP
+    </h2>
+
+    <div class="sidebar-subtitle">
+        Season 1 • Official Store
     </div>
 
 
-    <!-- SIDEBAR -->
-    <aside
-        class="sidebar"
-        id="sidebar">
+    <div class="sidebar-title">
+        Store
+    </div>
 
-        <button
-            class="close-btn"
-            onclick="closeMenu()">
-            ×
-        </button>
 
-        <div class="sidebar-title">
-            MIROR <span>SMP</span>
+    <button
+        class="sidebar-item"
+        onclick="goTo('rank')">
+
+        <div class="sidebar-icon">
+            👑
         </div>
 
-        <div class="sidebar-subtitle">
-            Season 1 • Official Store
+        Rank
+
+    </button>
+
+
+    <button
+        class="sidebar-item"
+        onclick="goTo('item')">
+
+        <div class="sidebar-icon">
+            📦
         </div>
 
+        Item
 
-        <div class="nav-title">
-            Store
+    </button>
+
+
+    <button
+        class="sidebar-item"
+        onclick="openQRIS()">
+
+        <div class="sidebar-icon">
+            💳
         </div>
 
-        <a
-            href="#rank"
-            class="nav-item"
-            onclick="closeMenu()">
+        Donate via QRIS
 
-            <div class="nav-icon">
-                👑
-            </div>
-
-            <div>
-                Rank
-            </div>
-
-        </a>
+    </button>
 
 
-        <a
-            href="#item"
-            class="nav-item"
-            onclick="closeMenu()">
-
-            <div class="nav-icon">
-                📦
-            </div>
-
-            <div>
-                Item
-            </div>
-
-        </a>
+    <div class="sidebar-title">
+        Community
+    </div>
 
 
-        <div class="nav-title">
-            Community
+    <button
+        class="sidebar-item"
+        onclick="goTo('social')">
+
+        <div class="sidebar-icon">
+            🌐
         </div>
 
-        <a
-            href="#social"
-            class="nav-item"
-            onclick="closeMenu()">
+        Social
 
-            <div class="nav-icon">
-                💬
-            </div>
-
-            <div>
-                Social
-            </div>
-
-        </a>
+    </button>
 
 
-        <a
-            href="#contact"
-            class="nav-item"
-            onclick="closeMenu()">
+    <button
+        class="sidebar-item"
+        onclick="goTo('contact')">
 
-            <div class="nav-icon">
-                📞
-            </div>
-
-            <div>
-                Contact
-            </div>
-
-        </a>
-
-    </aside>
-
-
-    <!-- HEADER -->
-    <header>
-
-        <button
-            class="menu-btn"
-            onclick="openMenu()">
-
-            ☰
-
-        </button>
-
-        <div class="brand">
-            MIROR <span>SMP</span>
+        <div class="sidebar-icon">
+            📩
         </div>
 
-    </header>
+        Contact
 
+    </button>
 
-    <!-- MAIN -->
-    <main>
+</aside>
 
 
-        <!-- HERO -->
-        <section class="hero">
+<!-- =========================
+     HERO
+========================= -->
 
-            <div class="badge">
-                MIROR SMP • SEASON 1
-            </div>
+<header class="hero">
 
-            <h1>
-                MIROR <span>SMP</span>
-            </h1>
-
-            <p>
-                Survival • Economy • Community
-                <br>
-                Official Store MIROR SMP Season 1.
-            </p>
-
-        </section>
-
-
-        <!-- SERVER INFORMATION -->
-        <section>
-
-            <h2 class="section-title">
-                Server Information
-            </h2>
-
-            <p class="section-description">
-                Semua informasi penting tentang server.
-            </p>
-
-
-            <div class="server-grid">
-
-                <div class="server-card">
-
-                    <div class="label">
-                        SERVER IP
-                    </div>
-
-                    <div class="server-value">
-                        play.miroredsmp.my.id
-                    </div>
-
-                    <button
-                        class="copy-btn"
-                        onclick="copyText('play.miroredsmp.my.id')">
-
-                        Copy IP
-
-                    </button>
-
-                </div>
-
-
-                <div class="server-card">
-
-                    <div class="label">
-                        PORT
-                    </div>
-
-                    <div class="server-value">
-                        2045
-                    </div>
-
-                </div>
-
-
-                <div class="server-card">
-
-                    <div class="label">
-                        STATUS
-                    </div>
-
-                    <div class="server-value online">
-                        ● Online
-                    </div>
-
-                </div>
-
-
-                <div class="server-card">
-
-                    <div class="label">
-                        VERSION
-                    </div>
-
-                    <div class="server-value">
-                        Java / Bedrock
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="actions">
-
-                <a
-                    class="action"
-                    href="https://chat.whatsapp.com/HqUCYohXg105gIWxIAbXEX"
-                    target="_blank">
-
-                    WhatsApp
-
-                </a>
-
-
-                <a
-                    class="action"
-                    href="https://discord.gg/"
-                    target="_blank">
-
-                    Discord
-
-                </a>
-
-
-                <a
-                    class="action"
-                    href="#vote">
-
-                    ⭐ Vote Server
-
-                </a>
-
-            </div>
-
-        </section>
-
-
-        <!-- RANK -->
-        <section id="rank">
-
-            <h2 class="section-title">
-                Rank
-            </h2>
-
-            <p class="section-description">
-                Klik rank untuk melihat benefit.
-            </p>
-
-
-            <div class="products">
-
-
-                <!-- BARON -->
-                <div class="product">
-
-                    <div class="product-icon">
-                        ⚔️
-                    </div>
-
-                    <h3>
-                        Baron
-                    </h3>
-
-                    <p>
-                        Repair, Feed, 5 Home,
-                        Kit Baron, dan $100.000.
-                    </p>
-
-                    <div class="price">
-                        Rp10.000
-                    </div>
-
-                    <button
-                        class="buy"
-                        onclick="openRank('Baron')">
-
-                        LIHAT BENEFIT
-
-                    </button>
-
-                </div>
-
-
-                <!-- VISCOUNT -->
-                <div class="product">
-
-                    <div class="product-icon">
-                        🛡️
-                    </div>
-
-                    <h3>
-                        Viscount
-                    </h3>
-
-                    <p>
-                        Fitur Baron + Fly,
-                        8 Home, Kit Viscount,
-                        dan $400.000.
-                    </p>
-
-                    <div class="price">
-                        Rp20.000
-                    </div>
-
-                    <button
-                        class="buy"
-                        onclick="openRank('Viscount')">
-
-                        LIHAT BENEFIT
-
-                    </button>
-
-                </div>
-
-
-                <!-- EARL -->
-                <div class="product">
-
-                    <div class="product-icon">
-                        👑
-                    </div>
-
-                    <h3>
-                        Earl
-                    </h3>
-
-                    <p>
-                        Fitur Viscount + EnderChest,
-                        Heal, 12 Home,
-                        dan $1.000.000.
-                    </p>
-
-                    <div class="price">
-                        Rp35.000
-                    </div>
-
-                    <button
-                        class="buy"
-                        onclick="openRank('Earl')">
-
-                        LIHAT BENEFIT
-
-                    </button>
-
-                </div>
-
-
-                <!-- MARQUESS -->
-                <div class="product">
-
-                    <div class="product-icon">
-                        💎
-                    </div>
-
-                    <h3>
-                        Marquess
-                    </h3>
-
-                    <p>
-                        Fitur Earl + Nick,
-                        Time, Weather, 18 Home,
-                        dan $3.000.000.
-                    </p>
-
-                    <div class="price">
-                        Rp60.000
-                    </div>
-
-                    <button
-                        class="buy"
-                        onclick="openRank('Marquess')">
-
-                        LIHAT BENEFIT
-
-                    </button>
-
-                </div>
-
-
-                <!-- DUKE -->
-                <div class="product">
-
-                    <div class="product-icon">
-                        🏆
-                    </div>
-
-                    <h3>
-                        Duke
-                    </h3>
-
-                    <p>
-                        Fitur Marquess + TP,
-                        Effect, 25 Home,
-                        dan $6.000.000.
-                    </p>
-
-                    <div class="price">
-                        Rp100.000
-                    </div>
-
-                    <button
-                        class="buy"
-                        onclick="openRank('Duke')">
-
-                        LIHAT BENEFIT
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ITEM -->
-        <section
-            id="item"
-            style="margin-top:55px;">
-
-            <h2 class="section-title">
-                Item
-            </h2>
-
-            <p class="section-description">
-                Item khusus MIROR SMP.
-            </p>
-
-
-            <div class="products">
-
-                <div class="product">
-
-                    <div class="product-icon">
-                        🔑
-                    </div>
-
-                    <h3>
-                        Miror Key
-                    </h3>
-
-                    <p>
-                        Kunci crate spesial
-                        MIROR SMP.
-                    </p>
-
-                    <div class="price">
-                        Rp5.000
-                    </div>
-
-                    <button
-                        class="buy"
-                        onclick="openItem('Miror Key', 'Rp5.000')">
-
-                        BELI SEKARANG
-
-                    </button>
-
-                </div>
-
-
-                <div class="product">
-
-                    <div class="product-icon">
-                        📦
-                    </div>
-
-                    <h3>
-                        Crate Key
-                    </h3>
-
-                    <p>
-                        Buka crate dan dapatkan
-                        berbagai hadiah.
-                    </p>
-
-                    <div class="price">
-                        Rp10.000
-                    </div>
-
-                    <button
-                        class="buy"
-                        onclick="openItem('Crate Key', 'Rp10.000')">
-
-                        BELI SEKARANG
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- SOCIAL -->
-        <section
-            id="social"
-            class="contact">
-
-            <h2 class="section-title">
-                Social
-            </h2>
-
-
-            <div class="contact-grid">
-
-                <a
-                    class="contact-item"
-                    href="https://chat.whatsapp.com/HqUCYohXg105gIWxIAbXEX"
-                    target="_blank">
-
-                    <small>
-                        WhatsApp
-                    </small>
-
-                    Group MIROR SMP
-
-                </a>
-
-
-                <a
-                    class="contact-item"
-                    href="https://discord.gg/"
-                    target="_blank">
-
-                    <small>
-                        Discord
-                    </small>
-
-                    MIROR SMP Community
-
-                </a>
-
-
-                <a
-                    class="contact-item"
-                    href="#vote">
-
-                    <small>
-                        Vote
-                    </small>
-
-                    Support server kami
-
-                </a>
-
-            </div>
-
-        </section>
-
-
-        <!-- CONTACT -->
-        <section
-            id="contact"
-            class="contact">
-
-            <h2 class="section-title">
-                Contact
-            </h2>
-
-
-            <div class="contact-grid">
-
-                <div class="contact-item">
-
-                    <small>
-                        Owner
-                    </small>
-
-                    Yoow9
-
-                </div>
-
-
-                <div class="contact-item">
-
-                    <small>
-                        Email
-                    </small>
-
-                    admin@miroredsmp.my.id
-
-                </div>
-
-
-                <div class="contact-item">
-
-                    <small>
-                        WhatsApp
-                    </small>
-
-                    Hubungi Owner
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- RANK MODAL -->
     <div
-        class="modal-overlay"
-        id="rankModal"
-        onclick="closeModalOutside(event)">
+        class="slideshow"
+        id="slideshow">
 
-        <div class="modal">
+        <img
+            class="slide active"
+            src="images/server1.jpg"
+            alt="MIROR SMP">
+
+        <img
+            class="slide"
+            src="images/server2.jpg"
+            alt="MIROR SMP">
+
+        <img
+            class="slide"
+            src="images/server3.jpg"
+            alt="MIROR SMP">
+
+    </div>
+
+
+    <h1>
+        MIROR SMP
+    </h1>
+
+
+    <p class="hero-description">
+
+        Survival • Economy • Community
+
+        <br>
+
+        Official Store MIROR SMP Season 1.
+        Dapatkan rank, item, dan dukung
+        perkembangan server.
+
+    </p>
+
+
+    <div class="server-info">
+
+        <div class="info-box">
+
+            <span>
+                SERVER IP
+            </span>
+
+            <strong>
+                miroredsmp.my.id
+            </strong>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <span>
+                PORT
+            </span>
+
+            <strong>
+                2045
+            </strong>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <span>
+                PLATFORM
+            </span>
+
+            <strong>
+                Java & Bedrock
+            </strong>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================
+     RANK
+========================= -->
+
+<section id="rank">
+
+    <div class="section-title">
+
+        <h2>
+            Rank
+        </h2>
+
+        <p>
+            Klik untuk melihat benefit
+            setiap rank.
+        </p>
+
+    </div>
+
+
+    <div class="products">
+
+
+        <div class="product">
+
+            <div class="product-icon">
+                ⚔️
+            </div>
+
+            <h3>
+                Baron
+            </h3>
+
+            <p class="product-description">
+                Rank awal dengan berbagai
+                fitur tambahan.
+            </p>
+
+            <div class="price">
+                Rp20.000
+            </div>
 
             <button
-                class="modal-close"
-                onclick="closeModal()">
+                class="product-btn"
+                onclick="showRank('Baron')">
 
-                ×
+                LIHAT BENEFIT
 
             </button>
 
+        </div>
 
-            <div class="modal-label">
-                MIROR SMP • RANK
+
+        <div class="product">
+
+            <div class="product-icon">
+                🛡️
             </div>
 
+            <h3>
+                Viscount
+            </h3>
 
-            <div
-                class="modal-title"
-                id="rankName">
+            <p class="product-description">
+                Semua fitur Baron dengan
+                tambahan Fly.
+            </p>
 
-                Baron
-
+            <div class="price">
+                Rp30.000
             </div>
-
-
-            <div
-                class="benefits"
-                id="rankBenefits">
-            </div>
-
-
-            <div
-                class="modal-price"
-                id="rankPrice">
-
-                Rp10.000
-
-            </div>
-
 
             <button
-                class="buy"
-                onclick="openPaymentFromRank()">
+                class="product-btn"
+                onclick="showRank('Viscount')">
+
+                LIHAT BENEFIT
+
+            </button>
+
+        </div>
+
+
+        <div class="product">
+
+            <div class="product-icon">
+                👑
+            </div>
+
+            <h3>
+                Earl
+            </h3>
+
+            <p class="product-description">
+                Fitur lengkap dengan
+                Ender Chest dan Heal.
+            </p>
+
+            <div class="price">
+                Rp45.000
+            </div>
+
+            <button
+                class="product-btn"
+                onclick="showRank('Earl')">
+
+                LIHAT BENEFIT
+
+            </button>
+
+        </div>
+
+
+        <div class="product">
+
+            <div class="product-icon">
+                💎
+            </div>
+
+            <h3>
+                Marquess
+            </h3>
+
+            <p class="product-description">
+                Fitur lanjutan dengan Nick,
+                Time dan Weather.
+            </p>
+
+            <div class="price">
+                Rp60.000
+            </div>
+
+            <button
+                class="product-btn"
+                onclick="showRank('Marquess')">
+
+                LIHAT BENEFIT
+
+            </button>
+
+        </div>
+
+
+        <div class="product">
+
+            <div class="product-icon">
+                🏆
+            </div>
+
+            <h3>
+                Duke
+            </h3>
+
+            <p class="product-description">
+                Rank premium dengan
+                TP dan Effect.
+            </p>
+
+            <div class="price">
+                Rp100.000
+            </div>
+
+            <button
+                class="product-btn"
+                onclick="showRank('Duke')">
+
+                LIHAT BENEFIT
+
+            </button>
+
+        </div>
+
+
+        <div class="product">
+
+            <div class="product-icon">
+                👑
+            </div>
+
+            <h3>
+                King
+            </h3>
+
+            <p class="product-description">
+                Rank tertinggi MIROR SMP.
+            </p>
+
+            <div class="price">
+                Rp200.000
+            </div>
+
+            <button
+                class="product-btn"
+                disabled>
+
+                COMING SOON
+
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ITEM
+========================= -->
+
+<section id="item">
+
+    <div class="section-title">
+
+        <h2>
+            Item
+        </h2>
+
+        <p>
+            Item khusus untuk kebutuhan
+            petualanganmu.
+        </p>
+
+    </div>
+
+
+    <div class="products">
+
+
+        <div class="product">
+
+            <div class="product-icon">
+                🔑
+            </div>
+
+            <h3>
+                Miror Key
+            </h3>
+
+            <p class="product-description">
+                Kunci crate spesial
+                MIROR SMP.
+            </p>
+
+            <div class="price">
+                Rp5.000
+            </div>
+
+            <button
+                class="product-btn"
+                onclick="buyItem('Miror Key', 5000)">
 
                 BELI SEKARANG
 
@@ -1622,482 +1594,769 @@
 
         </div>
 
-    </div>
 
+        <div class="product">
 
-    <!-- PAYMENT MODAL -->
-    <div
-        class="modal-overlay"
-        id="paymentModal"
-        onclick="closePaymentOutside(event)">
+            <div class="product-icon">
+                📦
+            </div>
 
-        <div class="modal">
+            <h3>
+                Custom Item
+            </h3>
+
+            <p class="product-description">
+                Item khusus atau kebutuhan
+                lainnya.
+            </p>
+
+            <div class="price">
+                Custom
+            </div>
 
             <button
-                class="modal-close"
-                onclick="closePayment()">
+                class="product-btn"
+                onclick="contactOwner()">
 
-                ×
+                HUBUNGI ADMIN
 
             </button>
-
-
-            <div class="payment-info">
-
-                <div class="modal-label">
-                    PEMBAYARAN
-                </div>
-
-
-                <div
-                    class="payment-title"
-                    id="paymentProduct">
-
-                    Baron
-
-                </div>
-
-
-                <div class="payment-subtitle">
-
-                    Scan QR di bawah untuk melakukan pembayaran.
-
-                </div>
-
-
-                <div class="qr-wrapper">
-
-                    <img
-                        src="qr.png"
-                        alt="QR Pembayaran"
-                        onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'color:#555;font-size:12px;text-align:center\'>QR belum diupload<br><br>Tambahkan file qr.png</span>'">
-
-                </div>
-
-
-                <div class="amount-box">
-
-                    <small>
-                        NOMINAL PEMBAYARAN
-                    </small>
-
-                    <div
-                        class="amount"
-                        id="paymentAmount">
-
-                        Rp10.000
-
-                    </div>
-
-                </div>
-
-
-                <div class="payment-note">
-
-                    Setelah melakukan pembayaran,
-                    tekan tombol <b>Sudah Bayar</b>
-                    lalu kirim bukti pembayaran kepada Owner
-                    melalui WhatsApp.
-
-                </div>
-
-
-                <button
-                    class="paid-btn"
-                    onclick="confirmPayment()">
-
-                    ✓ SUDAH BAYAR
-
-                </button>
-
-
-                <button
-                    class="back-btn"
-                    onclick="closePayment()">
-
-                    Kembali
-
-                </button>
-
-            </div>
 
         </div>
 
     </div>
 
+</section>
 
-    <!-- FOOTER -->
-    <footer>
 
-        © 2026 MIROR SMP • Season 1
-
-        <br>
+<!-- =========================
+     SOCIAL
+========================= -->
 
-        Not affiliated with Mojang Studios.
-
-    </footer>
+<section id="social">
 
+    <div class="section-title">
 
-    <script>
+        <h2>
+            Social
+        </h2>
 
-        /*
-         * =========================================
-         * CONFIG
-         * =========================================
-         */
+        <p>
+            Bergabung dengan komunitas
+            MIROR SMP.
+        </p>
 
-        const OWNER_WA = "6285743003734";
+    </div>
 
-        const STORE_NAME = "MIROR SMP";
 
+    <div class="social">
 
-        /*
-         * =========================================
-         * DATA RANK
-         * =========================================
-         */
+        <a
+            class="social-card"
+            href="https://chat.whatsapp.com/HqUCYohXg105gIWxIAbXEX?s=cl&p=a&ilr=0"
+            target="_blank">
 
-        const ranks = {
+            <small>
+                WHATSAPP
+            </small>
 
-            Baron: {
-                price: "Rp10.000",
+            Group MIROR SMP
 
-                benefits: [
-                    "Repair",
-                    "Feed",
-                    "5 Home",
-                    "Kit Baron",
-                    "$100.000"
-                ]
-            },
+        </a>
 
-            Viscount: {
-                price: "Rp20.000",
 
-                benefits: [
-                    "Semua fitur Baron",
-                    "Fly",
-                    "8 Home",
-                    "Kit Viscount",
-                    "$400.000"
-                ]
-            },
+        <a
+            class="social-card"
+            href="#"
+            target="_blank">
 
-            Earl: {
-                price: "Rp35.000",
+            <small>
+                DISCORD
+            </small>
 
-                benefits: [
-                    "Semua fitur Viscount",
-                    "Ender Chest",
-                    "Heal",
-                    "12 Home",
-                    "Kit Earl",
-                    "$1.000.000"
-                ]
-            },
+            MIROR SMP Community
 
-            Marquess: {
-                price: "Rp60.000",
+        </a>
 
-                benefits: [
-                    "Semua fitur Earl",
-                    "Nick",
-                    "Set Time",
-                    "Set Weather",
-                    "18 Home",
-                    "Kit Marquess",
-                    "$3.000.000"
-                ]
-            },
 
-            Duke: {
-                price: "Rp100.000",
+        <a
+            class="social-card"
+            href="#"
+            target="_blank">
 
-                benefits: [
-                    "Semua fitur Marquess",
-                    "Teleport",
-                    "Effect",
-                    "25 Home",
-                    "Kit Duke",
-                    "$6.000.000"
-                ]
-            }
+            <small>
+                VOTE
+            </small>
 
-        };
+            Vote MIROR SMP
 
+        </a>
 
-        /*
-         * =========================================
-         * STATE
-         * =========================================
-         */
+    </div>
 
-        let selectedProduct = "";
-        let selectedAmount = "";
+</section>
 
 
-        /*
-         * =========================================
-         * SIDEBAR
-         * =========================================
-         */
+<!-- =========================
+     CONTACT
+========================= -->
 
-        const sidebar =
-            document.getElementById("sidebar");
+<section id="contact">
 
-        const overlay =
-            document.getElementById("overlay");
+    <div class="section-title">
 
+        <h2>
+            Contact
+        </h2>
 
-        function openMenu() {
+        <p>
+            Hubungi Owner untuk bantuan
+            atau pembelian.
+        </p>
 
-            sidebar.classList.add("active");
+    </div>
 
-            overlay.classList.add("active");
 
-        }
+    <div class="contact-box">
 
+        <div class="contact-row">
 
-        function closeMenu() {
+            <span>
+                OWNER
+            </span>
 
-            sidebar.classList.remove("active");
+            MIROR SMP
 
-            overlay.classList.remove("active");
+        </div>
 
-        }
 
+        <div class="contact-row">
 
-        /*
-         * =========================================
-         * RANK MODAL
-         * =========================================
-         */
+            <span>
+                WHATSAPP
+            </span>
 
-        function openRank(rank) {
+            6285743003734
 
-            const data = ranks[rank];
+        </div>
 
-            if (!data) return;
 
+        <div class="contact-row">
 
-            selectedProduct = rank;
+            <span>
+                EMAIL
+            </span>
 
-            selectedAmount = data.price;
+            admin@miroredsmp.my.id
 
+        </div>
 
-            document.getElementById(
-                "rankName"
-            ).textContent = rank;
+    </div>
 
+</section>
 
-            document.getElementById(
-                "rankPrice"
-            ).textContent = data.price;
 
+<!-- =========================
+     MODAL
+========================= -->
 
-            const benefits =
-                document.getElementById(
-                    "rankBenefits"
-                );
+<div
+    class="modal"
+    id="modal">
 
+    <div class="modal-box">
 
-            benefits.innerHTML = "";
+        <button
+            class="close"
+            onclick="closeModal()">
 
+            ×
 
-            data.benefits.forEach(
-                function (benefit) {
+        </button>
 
-                    const element =
-                        document.createElement("div");
 
-                    element.className = "benefit";
+        <div id="modalContent"></div>
 
-                    element.textContent = benefit;
+    </div>
 
-                    benefits.appendChild(element);
+</div>
 
-                }
-            );
 
+<footer>
 
-            document
-                .getElementById("rankModal")
-                .classList.add("active");
+    © 2026 MIROR SMP
+    • Season 1
 
+    <br>
 
-            document.body.classList.add(
-                "no-scroll"
-            );
+    Not affiliated with Mojang Studios.
 
-        }
+</footer>
 
 
-        function openRankPayment() {
+<script>
 
-            const data = ranks[selectedProduct];
+/* =========================
+   CONFIG
+========================= */
 
-            if (!data) return;
+const OWNER =
+    "6285743003734";
 
 
-            selectedAmount = data.price;
+/* =========================
+   SIDEBAR
+========================= */
 
+function toggleSidebar() {
 
-            document.getElementById(
-                "paymentProduct"
-            ).textContent = selectedProduct;
+    document
+        .getElementById("sidebar")
+        .classList.toggle("active");
 
+}
 
-            document.getElementById(
-                "paymentAmount"
-            ).textContent = selectedAmount;
 
+function goTo(id) {
 
-            document
-                .getElementById("rankModal")
-                .classList.remove("active");
+    document
+        .getElementById("sidebar")
+        .classList.remove("active");
 
+    document
+        .getElementById(id)
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
 
-            document
-                .getElementById("paymentModal")
-                .classList.add("active");
+}
 
-        }
 
+/* =========================
+   SLIDESHOW
+========================= */
 
-        function openPaymentFromRank() {
+const slides =
+    document.querySelectorAll(".slide");
 
-            openRankPayment();
+let currentSlide = 0;
 
-        }
+if (slides.length > 1) {
 
+    setInterval(() => {
 
-        /*
-         * =========================================
-         * ITEM PAYMENT
-         * =========================================
-         */
+        slides[currentSlide]
+            .classList.remove("active");
 
-        function openItem(
-            product,
-            amount
-        ) {
+        currentSlide =
+            (currentSlide + 1) %
+            slides.length;
 
-            selectedProduct = product;
+        slides[currentSlide]
+            .classList.add("active");
 
-            selectedAmount = amount;
+    }, 2000);
 
+}
 
-            document.getElementById(
-                "paymentProduct"
-            ).textContent = product;
 
+/* =========================
+   MUSIC
+========================= */
 
-            document.getElementById(
-                "paymentAmount"
-            ).textContent = amount;
+const music =
+    document.getElementById("bgMusic");
 
+const musicPlayer =
+    document.getElementById("musicPlayer");
 
-            document
-                .getElementById("paymentModal")
-                .classList.add("active");
+const musicControl =
+    document.getElementById("musicControl");
 
+const musicStatus =
+    document.getElementById("musicStatus");
 
-            document.body.classList.add(
-                "no-scroll"
-            );
 
-        }
+function toggleMusicPanel() {
 
+    musicPlayer
+        .classList
+        .toggle("active");
 
-        /*
-         * =========================================
-         * PAYMENT
-         * =========================================
-         */
+}
 
-        function confirmPayment() {
 
-            if (
-                !OWNER_WA ||
-                OWNER_WA.includes("xxxxxxxx")
-            ) {
+function toggleMusic(event) {
 
-                alert(
-                    "Nomor WhatsApp Owner belum diatur."
-                );
+    event.stopPropagation();
 
-                return;
+    if (music.paused) {
 
-            }
+        music.play()
+            .then(() => {
 
+                musicControl.textContent =
+                    "Ⅱ";
 
-            const message =
-`Halo Owner ${STORE_NAME},
+                musicStatus.textContent =
+                    "Playing";
 
-Saya sudah melakukan pembayaran.
+            })
+            .catch(() => {
 
-Produk: ${selectedProduct}
-Nominal: ${selectedAmount}
+                musicStatus.textContent =
+                    "Klik ▶ untuk mulai";
+
+            });
+
+    } else {
+
+        music.pause();
+
+        musicControl.textContent =
+            "▶";
+
+        musicStatus.textContent =
+            "Paused";
+
+    }
+
+}
+
+
+music.addEventListener(
+    "play",
+    () => {
+
+        musicControl.textContent =
+            "Ⅱ";
+
+        musicStatus.textContent =
+            "Playing";
+
+    }
+);
+
+
+music.addEventListener(
+    "pause",
+    () => {
+
+        musicControl.textContent =
+            "▶";
+
+        musicStatus.textContent =
+            "Paused";
+
+    }
+);
+
+
+/* Autoplay attempt */
+
+window.addEventListener(
+    "load",
+    () => {
+
+        music.play()
+            .then(() => {
+
+                musicControl.textContent =
+                    "Ⅱ";
+
+                musicStatus.textContent =
+                    "Playing";
+
+            })
+            .catch(() => {
+
+                musicStatus.textContent =
+                    "Klik ▶ untuk mulai";
+
+            });
+
+    }
+);
+
+
+/* =========================
+   RANK DATA
+========================= */
+
+const ranks = {
+
+    Baron: {
+        price: 20000,
+
+        benefits: [
+            "Repair",
+            "Food",
+            "Sethome 5",
+            "Kit Baron",
+            "Money 100K"
+        ]
+    },
+
+    Viscount: {
+        price: 30000,
+
+        benefits: [
+            "Semua benefit Baron",
+            "Fly",
+            "Sethome 8",
+            "Kit Viscount",
+            "Money 400K"
+        ]
+    },
+
+    Earl: {
+        price: 45000,
+
+        benefits: [
+            "Semua benefit Viscount",
+            "Ender Chest",
+            "Heal",
+            "Sethome 12",
+            "Kit Earl",
+            "Money 1M"
+        ]
+    },
+
+    Marquess: {
+        price: 60000,
+
+        benefits: [
+            "Semua benefit Earl",
+            "Nick",
+            "Time Set",
+            "Weather Set",
+            "Sethome 18",
+            "Kit Marquess",
+            "Money 3M"
+        ]
+    },
+
+    Duke: {
+        price: 100000,
+
+        benefits: [
+            "Semua benefit Marquess",
+            "Teleport",
+            "Effect",
+            "Sethome 25",
+            "Kit Duke",
+            "Money 6M"
+        ]
+    },
+
+    King: {
+        price: 200000,
+
+        benefits: [
+            "Coming Soon"
+        ],
+
+        comingSoon: true
+    }
+
+};
+
+
+/* =========================
+   FORMAT PRICE
+========================= */
+
+function formatRupiah(value) {
+
+    return "Rp" +
+        Number(value)
+        .toLocaleString("id-ID");
+
+}
+
+
+/* =========================
+   RANK MODAL
+========================= */
+
+function showRank(rank) {
+
+    const data =
+        ranks[rank];
+
+    if (!data) return;
+
+
+    const benefits =
+        data.benefits
+        .map(
+            (item, index) =>
+                `<div
+                    class="benefit"
+                    style="animation-delay:${index * 35}ms">
+                    ${item}
+                </div>`
+        )
+        .join("");
+
+
+    let button;
+
+
+    if (data.comingSoon) {
+
+        button = `
+            <button
+                class="product-btn"
+                disabled>
+
+                COMING SOON
+
+            </button>
+        `;
+
+    } else {
+
+        button = `
+            <button
+                class="buy-btn"
+                onclick="buyRank('${rank}')">
+
+                BELI SEKARANG
+
+            </button>
+        `;
+
+    }
+
+
+    document
+        .getElementById("modalContent")
+        .innerHTML = `
+
+            <div class="modal-label">
+                MIROR SMP • RANK
+            </div>
+
+            <h2>
+                ${rank}
+            </h2>
+
+            <div class="benefits">
+                ${benefits}
+            </div>
+
+            <div class="modal-price">
+                ${formatRupiah(data.price)}
+            </div>
+
+            ${button}
+
+        `;
+
+
+    openModal();
+
+}
+
+
+/* =========================
+   BUY RANK
+========================= */
+
+function buyRank(rank) {
+
+    const data =
+        ranks[rank];
+
+    const message =
+        `Halo Owner MIROR SMP,
+
+Saya ingin membeli Rank ${rank}.
+Nominal: ${formatRupiah(data.price)}
+
+Mohon info pembayaran.`;
+
+    window.open(
+        "https://wa.me/" +
+        OWNER +
+        "?text=" +
+        encodeURIComponent(message),
+        "_blank"
+    );
+
+}
+
+
+/* =========================
+   BUY ITEM
+========================= */
+
+function buyItem(
+    item,
+    price
+) {
+
+    const message =
+        `Halo Owner MIROR SMP,
+
+Saya ingin membeli ${item}.
+Nominal: ${formatRupiah(price)}
+
+Mohon info pembayaran.`;
+
+    window.open(
+        "https://wa.me/" +
+        OWNER +
+        "?text=" +
+        encodeURIComponent(message),
+        "_blank"
+    );
+
+}
+
+
+/* =========================
+   QRIS
+========================= */
+
+function openQRIS() {
+
+    document
+        .getElementById("sidebar")
+        .classList.remove("active");
+
+
+    document
+        .getElementById("modalContent")
+        .innerHTML = `
+
+            <div class="modal-label">
+                MIROR SMP • SUPPORT
+            </div>
+
+            <h2>
+                Donate via QRIS
+            </h2>
+
+            <img
+                src="qr.png"
+                class="qris-img"
+                alt="QRIS MIROR SMP">
+
+            <div class="qris-note">
+
+                Scan QRIS untuk melakukan
+                donasi atau pembayaran.
+
+                <br><br>
+
+                Setelah pembayaran selesai,
+                tekan tombol di bawah dan
+                kirim bukti pembayaran
+                kepada Owner.
+
+            </div>
+
+            <button
+                class="buy-btn"
+                onclick="paymentDone()">
+
+                SUDAH BAYAR
+
+            </button>
+
+        `;
+
+
+    openModal();
+
+}
+
+
+/* =========================
+   PAYMENT DONE
+========================= */
+
+function paymentDone() {
+
+    const message =
+        `Halo Owner MIROR SMP,
+
+Saya sudah melakukan pembayaran melalui QRIS.
 
 Saya akan mengirimkan bukti pembayaran di chat ini.
 
-Mohon dicek dan diproses. Terima kasih.`;
+Mohon dicek. Terima kasih.`;
+
+    window.open(
+        "https://wa.me/" +
+        OWNER +
+        "?text=" +
+        encodeURIComponent(message),
+        "_blank"
+    );
+
+}
 
 
-            const url =
-                "https://wa.me/" +
-                OWNER_WA +
-                "?text=" +
-                encodeURIComponent(message);
+/* =========================
+   CONTACT
+========================= */
+
+function contactOwner() {
+
+    const message =
+        "Halo Owner MIROR SMP, saya ingin bertanya mengenai store.";
+
+    window.open(
+        "https://wa.me/" +
+        OWNER +
+        "?text=" +
+        encodeURIComponent(message),
+        "_blank"
+    );
+
+}
 
 
-            window.open(
-                url,
-                "_blank"
-            );
+/* =========================
+   MODAL
+========================= */
 
-        }
+function openModal() {
 
+    document
+        .getElementById("modal")
+        .classList.add("active");
 
-        /*
-         * =========================================
-         * CLOSE MODALS
-         * =========================================
-         */
+    document.body
+        .classList.add("no-scroll");
 
-        function closeModal() {
-
-            document
-                .getElementById("rankModal")
-                .classList.remove("active");
+}
 
 
-            document.body.classList.remove(
-                "no-scroll"
-            );
+function closeModal() {
 
-        }
+    document
+        .getElementById("modal")
+        .classList.remove("active");
 
+    document.body
+        .classList.remove("no-scroll");
 
-        function closePayment() {
-
-            document
-                .getElementById("paymentModal")
-                .classList.remove("active");
+}
 
 
-            document.body.classList.remove(
-                "no-scroll"
-            );
-
-        }
-
-
-        function closeModalOutside(event) {
+document
+    .getElementById("modal")
+    .addEventListener(
+        "click",
+        function(event) {
 
             if (
-                event.target ===
-                document.getElementById("rankModal")
+                event.target === this
             ) {
 
                 closeModal();
@@ -2105,78 +2364,35 @@ Mohon dicek dan diproses. Terima kasih.`;
             }
 
         }
+    );
 
 
-        function closePaymentOutside(event) {
+/* =========================
+   ESC
+========================= */
 
-            if (
-                event.target ===
-                document.getElementById("paymentModal")
-            ) {
+document.addEventListener(
+    "keydown",
+    function(event) {
 
-                closePayment();
+        if (
+            event.key === "Escape"
+        ) {
 
-            }
+            closeModal();
 
-        }
-
-
-        /*
-         * =========================================
-         * COPY IP
-         * =========================================
-         */
-
-        function copyText(text) {
-
-            navigator.clipboard
-                .writeText(text)
-                .then(
-                    function () {
-
-                        alert(
-                            "IP berhasil disalin!"
-                        );
-
-                    }
-                )
-                .catch(
-                    function () {
-
-                        alert(
-                            "Gagal menyalin IP."
-                        );
-
-                    }
+            document
+                .getElementById("sidebar")
+                .classList.remove(
+                    "active"
                 );
 
         }
 
+    }
+);
 
-        /*
-         * =========================================
-         * ESCAPE KEY
-         * =========================================
-         */
-
-        document.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (event.key === "Escape") {
-
-                    closeModal();
-
-                    closePayment();
-
-                    closeMenu();
-
-                }
-
-            }
-        );
-
-    </script>
+</script>
 
 </body>
 </html>
