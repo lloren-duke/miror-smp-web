@@ -3,2286 +3,2009 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#08080d">
+<meta name="theme-color" content="#050308">
+<title>MIROR SMP — Server Store</title>
 
-<title>MIROR SMP — Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root{
+  --bg:#050308;
+  --bg2:#0b0714;
+  --glass:rgba(255,255,255,.035);
+  --glass-hover:rgba(255,255,255,.06);
+  --line:rgba(168,120,255,.16);
+  --line-soft:rgba(255,255,255,.06);
+  --violet:#9b6bff;
+  --violet-deep:#6d28d9;
+  --lavender:#c9a8ff;
+  --gold:#e8c26b;
+  --text:#f3eefc;
+  --muted:#9084a8;
+  --muted-dim:#5c5270;
+  --display:"Poppins",sans-serif;
+  --body:"Inter",sans-serif;
+  --mono:"JetBrains Mono",monospace;
 }
 
-:root {
-    --bg: #08080d;
-    --card: #101018;
-    --card2: #151522;
-    --purple: #7c3aed;
-    --purple2: #a855f7;
-    --text: #fff;
-    --muted: #9292a5;
-    --border: rgba(255,255,255,.08);
-    --green: #22c55e;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-html {
-    scroll-behavior: smooth;
+html{
+  scroll-behavior:smooth;
 }
 
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background:
-        radial-gradient(
-            circle at 50% -15%,
-            rgba(124,58,237,.18),
-            transparent 38%
-        ),
-        var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
+body{
+  background:
+    radial-gradient(ellipse 700px 500px at 12% -5%,rgba(155,107,255,.20),transparent 60%),
+    radial-gradient(ellipse 600px 500px at 92% 10%,rgba(109,40,217,.16),transparent 55%),
+    radial-gradient(ellipse 800px 600px at 50% 110%,rgba(155,107,255,.10),transparent 60%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--body);
+  min-height:100vh;
+  overflow-x:hidden;
 }
 
-body.no-scroll {
-    overflow: hidden;
+body.locked{
+  overflow:hidden;
 }
 
-button,
-a {
-    font-family: inherit;
+a{
+  color:inherit;
+  text-decoration:none;
 }
 
-button {
-    cursor: pointer;
+button{
+  font-family:inherit;
+  cursor:pointer;
+  border:none;
+  background:none;
+  color:inherit;
 }
 
-a {
-    color: inherit;
-    text-decoration: none;
+::selection{
+  background:var(--violet);
+  color:#0a0512;
 }
 
-/* =========================
-   PAGE LOAD
-========================= */
-
-body {
-    animation: pageIn .45s ease-out;
+h1,h2,h3{
+  font-family:var(--display);
 }
 
-@keyframes pageIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+.mono{
+  font-family:var(--mono);
 }
-
-/* =========================
-   SIDEBAR
-========================= */
-
-.menu-btn {
-    position: fixed;
-    top: 18px;
-    left: 18px;
-
-    width: 45px;
-    height: 45px;
-
-    border: 1px solid var(--border);
-    border-radius: 12px;
-
-    background: rgba(10,10,15,.82);
-    color: white;
 
-    font-size: 21px;
-
-    z-index: 1000;
-
-    backdrop-filter: blur(15px);
-
-    transition:
-        transform .18s ease,
-        background .18s ease,
-        border-color .18s ease;
+.reveal{
+  opacity:0;
+  transform:translateY(16px);
+  transition:.6s ease;
 }
-
-.menu-btn:hover {
-    background: var(--purple);
-    border-color: var(--purple);
 
-    transform: scale(1.05);
+.reveal.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* NAV */
+.nav-wrap{
+  position:fixed;
+  top:16px;
+  left:0;
+  right:0;
+  z-index:1000;
+  display:flex;
+  justify-content:center;
+  padding:0 16px;
 }
 
-.menu-btn:active {
-    transform: scale(.94);
+.nav{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:9px 10px 9px 20px;
+  background:rgba(15,10,24,.65);
+  border:1px solid var(--line);
+  border-radius:999px;
+  backdrop-filter:blur(16px);
+  max-width:100%;
+  transition:.25s;
+}
+
+.nav.scrolled{
+  background:rgba(15,10,24,.9);
+  box-shadow:0 8px 30px rgba(109,40,217,.25);
 }
-
-.sidebar {
-    position: fixed;
-
-    top: 0;
-    left: -290px;
-
-    width: 275px;
-    height: 100vh;
-
-    background: #0d0d14;
 
-    border-right: 1px solid var(--border);
-
-    z-index: 1100;
-
-    padding: 80px 20px 25px;
-
-    transition:
-        left .28s cubic-bezier(.22,.8,.25,1);
-
-    overflow-y: auto;
+.nav-brand{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--display);
+  font-weight:700;
+  font-size:15px;
+  margin-right:8px;
 }
-
-.sidebar.active {
-    left: 0;
+
+.nav-brand-mark{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--violet);
+  box-shadow:0 0 10px rgba(155,107,255,.9);
 }
-
-.sidebar h2 {
-    font-size: 22px;
-    margin-bottom: 5px;
+
+.nav-links{
+  display:flex;
+  gap:2px;
 }
 
-.sidebar-subtitle {
-    color: var(--muted);
-    font-size: 12px;
-    margin-bottom: 28px;
+.nav-links a{
+  padding:9px 13px;
+  font-size:12.5px;
+  color:var(--muted);
+  border-radius:999px;
+  transition:.15s;
 }
 
-.sidebar-title {
-    color: #666672;
-    font-size: 11px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 20px 5px 9px;
+.nav-links a:hover{
+  color:var(--text);
+  background:rgba(255,255,255,.06);
+}
+
+.nav-cta{
+  margin-left:6px;
+  padding:9px 17px;
+  border-radius:999px;
+  background:linear-gradient(135deg,var(--violet),var(--violet-deep));
+  font-size:12.5px;
+  font-weight:600;
+}
+
+.nav-toggle{
+  display:none;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
 }
-
-.sidebar-item {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-
-    gap: 12px;
-
-    padding: 13px;
-
-    margin-bottom: 7px;
-
-    border: 0;
-    border-radius: 10px;
-
-    background: var(--card2);
-
-    color: #ddd;
-
-    text-align: left;
 
-    font-size: 14px;
-
-    transition:
-        transform .18s ease,
-        background .18s ease,
-        color .18s ease;
+.nav-mobile{
+  display:none;
+  position:fixed;
+  top:74px;
+  left:16px;
+  right:16px;
+  z-index:999;
+  background:rgba(15,10,24,.95);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:10px;
+  backdrop-filter:blur(16px);
+  flex-direction:column;
 }
 
-.sidebar-item:hover {
-    background: var(--purple);
-    color: white;
-
-    transform: translateX(4px);
+.nav-mobile.active{
+  display:flex;
 }
 
-.sidebar-icon {
-    width: 25px;
-    text-align: center;
+.nav-mobile a{
+  padding:13px 14px;
+  font-size:14px;
+  color:var(--muted);
+  border-radius:12px;
 }
-
-/* =========================
-   MUSIC
-========================= */
-
-.music-player {
-    position: fixed;
-
-    top: 20px;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    width: 48px;
-    height: 42px;
 
-    background: rgba(15,15,22,.94);
-
-    border: 1px solid var(--border);
-    border-radius: 12px;
-
-    display: flex;
-    align-items: center;
-
-    overflow: hidden;
-
-    z-index: 900;
-
-    cursor: pointer;
-
-    backdrop-filter: blur(15px);
-
-    transition:
-        width .28s cubic-bezier(.22,.8,.25,1),
-        box-shadow .2s ease;
+.nav-mobile a:hover{
+  background:rgba(255,255,255,.05);
+  color:var(--text);
 }
 
-.music-player:hover {
-    box-shadow:
-        0 8px 30px rgba(0,0,0,.25);
+/* HERO */
+.hero{
+  padding:150px 20px 70px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  min-height:640px;
+  position:relative;
 }
 
-.music-player.active {
-    width: 310px;
+.stars{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
 }
-
-.music-icon {
-    min-width: 48px;
 
-    text-align: center;
-
-    color: var(--purple2);
-
-    font-size: 20px;
-
-    animation: musicPulse 1.6s ease-in-out infinite;
+.star{
+  position:absolute;
+  width:2px;
+  height:2px;
+  border-radius:50%;
+  background:#fff;
+  animation:twinkle ease-in-out infinite;
 }
 
-@keyframes musicPulse {
-    0%,100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.12);
-    }
+@keyframes twinkle{
+  0%,100%{opacity:.15}
+  50%{opacity:.95}
 }
-
-.music-info {
-    flex: 1;
-    min-width: 0;
 
-    opacity: 0;
-
-    transition:
-        opacity .18s ease;
+.hero>*{
+  position:relative;
+  z-index:1;
 }
 
-.music-player.active .music-info {
-    opacity: 1;
+.badge-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 16px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--glass);
+  font-size:12px;
+  color:var(--lavender);
+  letter-spacing:.5px;
+  margin-bottom:26px;
+  animation:riseIn .5s ease-out both;
 }
-
-.music-title {
-    font-size: 12px;
-    font-weight: bold;
 
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
+.badge-pill .dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--violet);
+  animation:pulse 1.8s infinite;
 }
-
-.music-status {
-    color: var(--muted);
-
-    font-size: 10px;
 
-    margin-top: 3px;
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(155,107,255,.5)}
+  70%{box-shadow:0 0 0 8px rgba(155,107,255,0)}
 }
-
-.music-control {
-    width: 35px;
-    height: 30px;
-
-    margin-right: 7px;
-
-    border: 0;
-    border-radius: 8px;
-
-    background: var(--purple);
 
-    color: white;
-
-    opacity: 0;
-
-    transition:
-        opacity .18s ease,
-        transform .15s ease;
+.hero h1{
+  font-size:clamp(38px,7vw,60px);
+  line-height:1.12;
+  margin-bottom:20px;
+  letter-spacing:-1px;
 }
 
-.music-player.active .music-control {
-    opacity: 1;
+.hero h1 span{
+  background:linear-gradient(100deg,var(--lavender),var(--violet) 60%,var(--gold));
+  -webkit-background-clip:text;
+  color:transparent;
 }
 
-.music-control:hover {
-    background: #6d28d9;
+.hero-sub{
+  max-width:600px;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.85;
+  margin-bottom:38px;
 }
 
-.music-control:active {
-    transform: scale(.9);
+.hero-cta{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-bottom:44px;
 }
-
-/* =========================
-   HERO
-========================= */
 
-.hero {
-    min-height: 650px;
-
-    padding:
-        105px 20px
-        70px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    text-align: center;
+.btn{
+  padding:14px 28px;
+  font-size:13px;
+  font-weight:600;
+  border-radius:14px;
+  transition:.16s;
 }
-
-.slideshow {
-    width: min(100%, 900px);
-    height: 360px;
 
-    margin-bottom: 40px;
-
-    overflow: hidden;
-
-    border-radius: 22px;
-
-    border: 1px solid var(--border);
-
-    background: #111;
-
-    box-shadow:
-        0 25px 70px rgba(0,0,0,.35);
-
-    animation:
-        heroImageIn .55s ease-out;
+.btn:hover{
+  transform:translateY(-2px);
 }
 
-@keyframes heroImageIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px) scale(.985);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+.btn-primary{
+  background:linear-gradient(135deg,var(--violet),var(--violet-deep));
+  box-shadow:0 10px 30px rgba(109,40,217,.35);
 }
-
-.slide {
-    width: 100%;
-    height: 100%;
 
-    object-fit: cover;
-
-    display: none;
+.btn-outline{
+  border:1px solid var(--line);
+  background:var(--glass);
 }
 
-.slide.active {
-    display: block;
-
-    animation:
-        slideFade .45s ease-out;
+.info-bar{
+  width:100%;
+  max-width:760px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  background:var(--glass);
+  border:1px solid var(--line);
+  border-radius:20px;
+  overflow:hidden;
 }
-
-@keyframes slideFade {
-    from {
-        opacity: .45;
-        transform: scale(1.025);
-    }
 
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+.info-cell{
+  padding:18px 14px;
+  text-align:center;
+  border-right:1px solid var(--line-soft);
 }
-
-.hero h1 {
-    font-size: clamp(40px, 8vw, 70px);
-
-    line-height: 1;
-
-    font-weight: 900;
-
-    letter-spacing: -2px;
 
-    background:
-        linear-gradient(
-            90deg,
-            #fff,
-            #a855f7
-        );
-
-    -webkit-background-clip: text;
-
-    color: transparent;
-
-    margin-bottom: 14px;
-
-    animation:
-        textUp .5s .08s ease-out both;
+.info-cell:last-child{
+  border-right:0;
 }
-
-.hero-description {
-    max-width: 600px;
-
-    color: var(--muted);
-
-    line-height: 1.7;
-
-    font-size: 14px;
 
-    margin-bottom: 30px;
-
-    animation:
-        textUp .5s .15s ease-out both;
+.info-cell span{
+  display:block;
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted-dim);
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  margin-bottom:8px;
 }
 
-@keyframes textUp {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.info-cell strong{
+  font-size:13.5px;
 }
-
-/* =========================
-   SERVER INFO
-========================= */
-
-.server-info {
-    width: min(100%, 850px);
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 12px;
 
-    animation:
-        textUp .5s .22s ease-out both;
+.status strong{
+  color:var(--violet);
 }
 
-.info-box {
-    background: var(--card);
-
-    border: 1px solid var(--border);
-
-    border-radius: 14px;
-
-    padding: 18px;
-
-    text-align: left;
-
-    transition:
-        transform .2s ease,
-        border-color .2s ease;
+.status-live{
+  display:inline-block!important;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--violet);
+  margin:0 5px 0 0;
 }
-
-.info-box:hover {
-    transform: translateY(-3px);
 
-    border-color:
-        rgba(168,85,247,.35);
+/* SECTIONS */
+section{
+  width:min(1080px,92%);
+  margin:auto;
+  padding:64px 0;
 }
-
-.info-box span {
-    display: block;
-
-    color: var(--muted);
 
-    font-size: 11px;
-
-    margin-bottom: 8px;
+.sec-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:30px;
 }
-
-.info-box strong {
-    display: block;
-
-    font-size: 14px;
 
-    word-break: break-word;
+.sec-tag{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--violet);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  display:block;
 }
 
-/* =========================
-   CONTENT
-========================= */
-
-section {
-    width: min(1100px, 92%);
-
-    margin: auto;
-
-    padding: 65px 0;
+.sec-head h2{
+  font-size:28px;
+  font-weight:600;
 }
 
-.section-title {
-    margin-bottom: 28px;
+.sec-head p{
+  color:var(--muted);
+  font-size:13px;
+  max-width:320px;
+  text-align:right;
 }
 
-.section-title h2 {
-    font-size: 30px;
+/* ABOUT */
+.about-card{
+  background:var(--glass);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:30px;
+  backdrop-filter:blur(10px);
 }
-
-.section-title p {
-    color: var(--muted);
 
-    font-size: 13px;
-
-    margin-top: 7px;
+.about-card p{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.9;
+  margin-bottom:22px;
 }
-
-/* =========================
-   PRODUCTS
-========================= */
-
-.products {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit, minmax(210px, 1fr));
 
-    gap: 16px;
+.about-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
 }
-
-.product {
-    background:
-        linear-gradient(
-            145deg,
-            #111119,
-            #0d0d13
-        );
-
-    border: 1px solid var(--border);
-
-    border-radius: 16px;
-
-    padding: 23px;
 
-    transition:
-        transform .2s cubic-bezier(.22,.8,.25,1),
-        border-color .2s ease,
-        box-shadow .2s ease;
+.about-cell{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line-soft);
+  border-radius:14px;
+  padding:15px 16px;
 }
 
-.product:hover {
-    transform: translateY(-5px);
-
-    border-color:
-        rgba(168,85,247,.45);
-
-    box-shadow:
-        0 14px 35px rgba(0,0,0,.2);
+.about-cell span{
+  display:block;
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted-dim);
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  margin-bottom:6px;
 }
-
-.product-icon {
-    width: 48px;
-    height: 48px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 12px;
-
-    background:
-        rgba(124,58,237,.13);
-
-    font-size: 22px;
 
-    margin-bottom: 17px;
-
-    transition:
-        transform .2s ease;
+/* CARDS */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(225px,1fr));
+  gap:16px;
 }
 
-.product:hover .product-icon {
-    transform:
-        translateY(-2px)
-        scale(1.05);
+.card{
+  position:relative;
+  background:var(--glass);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:26px;
+  backdrop-filter:blur(10px);
+  transition:.22s;
 }
-
-.product h3 {
-    font-size: 21px;
 
-    margin-bottom: 9px;
+.card:hover{
+  transform:translateY(-5px);
+  border-color:rgba(155,107,255,.5);
+  background:var(--glass-hover);
+  box-shadow:0 18px 40px rgba(109,40,217,.22);
 }
-
-.product-description {
-    color: var(--muted);
-
-    font-size: 12px;
 
-    line-height: 1.6;
-
-    min-height: 58px;
+.card.soon{
+  opacity:.6;
 }
-
-.price {
-    color: var(--purple2);
-
-    font-size: 22px;
-
-    font-weight: 800;
 
-    margin:
-        17px
-        0;
+.card.soon:hover{
+  transform:none;
+  box-shadow:none;
 }
 
-.product-btn {
-    width: 100%;
-
-    padding: 12px;
-
-    border: 0;
-
-    border-radius: 9px;
-
-    background: var(--purple);
-
-    color: white;
-
-    font-weight: bold;
-
-    font-size: 12px;
-
-    transition:
-        transform .15s ease,
-        background .18s ease;
+.ribbon{
+  position:absolute;
+  top:14px;
+  right:-6px;
+  background:linear-gradient(135deg,var(--gold),#b3893c);
+  color:#241a04;
+  font-size:9.5px;
+  font-weight:700;
+  padding:4px 12px;
+  border-radius:6px 0 0 6px;
 }
-
-.product-btn:hover {
-    background: var(--purple2);
 
-    transform: translateY(-1px);
+.card-icon{
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,rgba(155,107,255,.22),rgba(109,40,217,.12));
+  font-size:20px;
+  margin-bottom:16px;
 }
 
-.product-btn:active {
-    transform: scale(.97);
+.card h3{
+  font-size:18px;
+  margin-bottom:8px;
 }
-
-.product-btn:disabled {
-    background: #272733;
-
-    color: #777;
 
-    cursor: not-allowed;
-
-    transform: none;
+.card-desc{
+  color:var(--muted);
+  font-size:12.5px;
+  line-height:1.65;
+  min-height:50px;
 }
-
-/* =========================
-   SOCIAL
-========================= */
-
-.social {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit, minmax(200px, 1fr));
 
-    gap: 14px;
+.card-price{
+  font-family:var(--mono);
+  color:var(--gold);
+  font-size:19px;
+  font-weight:600;
+  margin:16px 0;
 }
 
-.social-card {
-    background: var(--card);
-
-    border: 1px solid var(--border);
-
-    border-radius: 14px;
-
-    padding: 20px;
-
-    transition:
-        transform .2s ease,
-        border-color .2s ease;
+.card-btn{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line-soft);
+  font-size:11.5px;
+  font-weight:600;
+  transition:.16s;
 }
-
-.social-card:hover {
-    border-color:
-        rgba(168,85,247,.4);
 
-    transform: translateY(-3px);
+.card-btn:hover{
+  border-color:var(--violet);
+  color:var(--lavender);
 }
-
-.social-card small {
-    color: var(--muted);
-
-    display: block;
 
-    font-size: 11px;
-
-    margin-bottom: 6px;
+.card-btn.solid{
+  background:linear-gradient(135deg,var(--violet),var(--violet-deep));
+  border-color:transparent;
+  color:#fff;
 }
-
-/* =========================
-   CONTACT
-========================= */
-
-.contact-box {
-    background: var(--card);
-
-    border: 1px solid var(--border);
 
-    border-radius: 17px;
-
-    padding: 25px;
+/* BACKUP */
+.backup-card{
+  padding:0;
+  overflow:hidden;
 }
-
-.contact-row {
-    padding: 13px 0;
 
-    border-bottom:
-        1px solid var(--border);
+.backup-slider{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  background:#08050d;
+  overflow:hidden;
 }
 
-.contact-row:last-child {
-    border-bottom: 0;
+.backup-slide{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transform:scale(1.02);
+  transition:opacity .55s ease,transform .7s ease;
 }
-
-.contact-row span {
-    color: var(--muted);
-
-    display: block;
 
-    font-size: 11px;
-
-    margin-bottom: 4px;
+.backup-slide.active{
+  opacity:1;
+  transform:scale(1);
 }
-
-/* =========================
-   MODAL
-========================= */
-
-.modal {
-    position: fixed;
-
-    inset: 0;
-
-    display: none;
-
-    align-items: center;
-
-    justify-content: center;
 
-    padding: 20px;
-
-    background:
-        rgba(0,0,0,.78);
-
-    backdrop-filter: blur(7px);
-
-    z-index: 2000;
-
-    animation: modalBg .2s ease;
+.backup-dots{
+  position:absolute;
+  right:16px;
+  bottom:16px;
+  display:flex;
+  gap:6px;
 }
 
-.modal.active {
-    display: flex;
+.backup-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:rgba(255,255,255,.35);
+  transition:.2s;
 }
 
-@keyframes modalBg {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+.backup-dot.active{
+  width:20px;
+  border-radius:10px;
+  background:var(--violet);
 }
-
-.modal-box {
-    width: min(450px, 100%);
-
-    max-height: 90vh;
-
-    overflow-y: auto;
 
-    background: #11111a;
-
-    border:
-        1px solid
-        rgba(168,85,247,.25);
-
-    border-radius: 18px;
-
-    padding: 25px;
-
-    box-shadow:
-        0 25px 80px
-        rgba(0,0,0,.6);
-
-    animation:
-        modalIn .23s cubic-bezier(.22,.8,.25,1);
+.backup-body{
+  padding:24px 26px 26px;
 }
-
-@keyframes modalIn {
-    from {
-        opacity: 0;
-
-        transform:
-            translateY(14px)
-            scale(.97);
-    }
 
-    to {
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-    }
+.backup-body .card-desc{
+  min-height:0;
 }
-
-.close {
-    float: right;
-
-    background: transparent;
-
-    border: 0;
 
-    color: #777;
-
-    font-size: 25px;
-
-    transition:
-        color .15s ease,
-        transform .15s ease;
+/* SOCIAL */
+.social-row{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  width:100%;
+  max-width:620px;
 }
 
-.close:hover {
-    color: white;
-
-    transform: rotate(5deg);
+.social-chip{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  width:100%;
+  padding:13px 16px;
+  background:var(--glass);
+  border:1px solid var(--line);
+  border-radius:16px;
+  transition:.18s;
 }
-
-.modal-label {
-    color: var(--purple2);
 
-    font-size: 11px;
-
-    font-weight: bold;
-
-    text-transform: uppercase;
-
-    letter-spacing: 1px;
-
-    margin-bottom: 6px;
+.social-chip:hover{
+  border-color:var(--violet);
+  transform:translateX(4px);
+  background:var(--glass-hover);
 }
-
-.modal-box h2 {
-    font-size: 28px;
 
-    margin-bottom: 17px;
+.social-icon{
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  object-fit:contain;
+  border-radius:10px;
+  background:rgba(255,255,255,.04);
 }
-
-.benefits {
-    color: #d4d4dc;
-
-    font-size: 13px;
 
-    line-height: 1.9;
-
-    margin-bottom: 18px;
+.social-chip small{
+  display:block;
+  font-family:var(--mono);
+  color:var(--muted-dim);
+  font-size:10px;
+  letter-spacing:1.3px;
+  margin-bottom:3px;
 }
-
-.benefit {
-    background: var(--card2);
-
-    border: 1px solid var(--border);
-
-    border-radius: 8px;
 
-    padding: 8px 11px;
-
-    margin-bottom: 7px;
-
-    animation:
-        benefitIn .2s ease both;
+.social-chip b{
+  font-size:13.5px;
+  font-weight:500;
 }
 
-@keyframes benefitIn {
-    from {
-        opacity: 0;
-        transform: translateX(-6px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+/* CONTACT */
+.founder-tag{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:1.5px;
+  color:var(--muted-dim);
+  margin-bottom:6px;
+  display:block;
 }
-
-.benefit::before {
-    content: "✓";
 
-    color: var(--purple2);
-
-    font-weight: bold;
-
-    margin-right: 8px;
+.email-row{
+  margin-top:16px;
+  padding:16px 20px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  font-family:var(--mono);
+  font-size:13px;
+  color:var(--muted);
+  background:var(--glass);
 }
-
-.modal-price {
-    color: var(--purple2);
 
-    font-size: 22px;
-
-    font-weight: 900;
-
-    margin-bottom: 16px;
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(4,2,8,.82);
+  backdrop-filter:blur(8px);
+  z-index:2000;
 }
-
-.buy-btn {
-    width: 100%;
-
-    padding: 13px;
 
-    border: 0;
-
-    border-radius: 10px;
-
-    background: var(--green);
-
-    color: white;
-
-    font-weight: bold;
-
-    transition:
-        transform .15s ease,
-        background .18s ease;
+.modal.active{
+  display:flex;
 }
-
-.buy-btn:hover {
-    background: #16a34a;
 
-    transform: translateY(-1px);
+.modal-box{
+  width:min(430px,100%);
+  max-height:88vh;
+  overflow-y:auto;
+  background:#0d0916;
+  border:1px solid var(--line);
+  border-radius:22px;
 }
 
-.buy-btn:active {
-    transform: scale(.98);
+.modal-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 20px;
+  border-bottom:1px solid var(--line-soft);
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted-dim);
 }
 
-/* =========================
-   QRIS
-========================= */
-
-.qris-img {
-    width: 100%;
+.modal-close{
+  font-size:20px;
+  color:var(--muted);
+}
 
-    max-width: 320px;
+.modal-content{
+  padding:28px;
+}
 
-    display: block;
+.modal-content h2{
+  font-size:25px;
+  margin-bottom:16px;
+}
 
-    margin:
-        20px auto;
+.benefit-list{
+  margin-bottom:18px;
+}
 
-    padding: 10px;
+.benefit-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 13px;
+  background:rgba(255,255,255,.03);
+  border-left:2px solid var(--violet);
+  border-radius:0 10px 10px 0;
+  margin-bottom:6px;
+  font-size:13px;
+}
 
-    background: white;
+.benefit-row::before{
+  content:"✓";
+  color:var(--violet);
+  font-weight:bold;
+}
 
-    border-radius: 14px;
+.modal-price{
+  font-family:var(--mono);
+  color:var(--gold);
+  font-size:22px;
+  font-weight:600;
+  margin-bottom:16px;
+}
 
-    animation:
-        qrIn .3s ease-out;
+.qris-img{
+  width:100%;
+  max-width:270px;
+  display:block;
+  margin:18px auto;
+  padding:10px;
+  background:#fff;
+  border-radius:14px;
 }
 
-@keyframes qrIn {
-    from {
-        opacity: 0;
-        transform: scale(.96);
-    }
+.qris-note{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.7;
+  margin-bottom:18px;
+}
 
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+/* MUSIC */
+.music{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  z-index:900;
+  display:flex;
+  align-items:center;
+  background:rgba(13,9,20,.9);
+  border:1px solid var(--line);
+  backdrop-filter:blur(12px);
+  overflow:hidden;
+  cursor:pointer;
+  height:46px;
+  width:46px;
+  border-radius:999px;
+  transition:width .28s ease;
 }
 
-.qris-note {
-    text-align: center;
+.music.active{
+  width:220px;
+}
 
-    color: var(--muted);
+.music-icon{
+  min-width:46px;
+  display:grid;
+  place-items:center;
+  color:var(--violet);
+  font-size:16px;
+}
 
-    font-size: 12px;
+.music-info{
+  flex:1;
+  min-width:0;
+  opacity:0;
+  transition:.18s;
+  padding-right:6px;
+}
 
-    line-height: 1.7;
+.music.active .music-info{
+  opacity:1;
+}
 
-    margin-bottom: 17px;
+.music-title{
+  font-size:11.5px;
+  font-weight:500;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-/* =========================
-   FOOTER
-========================= */
+.music-status{
+  color:var(--muted-dim);
+  font-size:10px;
+  font-family:var(--mono);
+  margin-top:2px;
+}
 
-footer {
-    border-top:
-        1px solid var(--border);
+.music-ctrl{
+  width:32px;
+  height:32px;
+  margin-right:6px;
+  border-radius:50%;
+  background:var(--violet);
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:12px;
+  opacity:0;
+}
 
-    text-align: center;
+.music.active .music-ctrl{
+  opacity:1;
+}
 
-    color: var(--muted);
+/* FOOTER */
+footer{
+  border-top:1px solid var(--line-soft);
+  text-align:center;
+  color:var(--muted-dim);
+  padding:34px 20px;
+  font-size:11px;
+  font-family:var(--mono);
+}
 
-    padding: 30px 20px;
+/* MOBILE */
+@media(max-width:900px){
+  .nav-links,
+  .nav-cta{
+    display:none;
+  }
 
-    font-size: 11px;
+  .nav-toggle{
+    display:flex;
+  }
 }
 
-/* =========================
-   MOBILE
-========================= */
+@media(max-width:800px){
+  .sec-head{
+    flex-direction:column;
+    align-items:flex-start;
+  }
 
-@media (max-width: 650px) {
+  .sec-head p{
+    text-align:left;
+  }
 
-    .music-player.active {
-        width:
-            calc(100vw - 30px);
-    }
+  .info-bar{
+    grid-template-columns:1fr 1fr;
+  }
 
-    .hero {
-        padding-top: 90px;
-    }
+  .about-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
 
-    .slideshow {
-        height: 230px;
-    }
+@media(max-width:480px){
+  .about-grid{
+    grid-template-columns:1fr;
+  }
 
-    .server-info {
-        grid-template-columns: 1fr;
-    }
+  .hero{
+    padding-top:125px;
+  }
 
-    .hero h1 {
-        letter-spacing: -1px;
-    }
+  .info-cell{
+    padding:15px 8px;
+  }
 
+  .info-cell strong{
+    font-size:12px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- =========================
-     MUSIC
-========================= -->
-
-<audio
-    id="bgMusic"
-    loop
-    preload="auto">
-
-    <source
-        src="music.mp3"
-        type="audio/mpeg">
-
+<audio id="bgMusic" loop preload="auto">
+  <source src="music.mp3" type="audio/mpeg">
 </audio>
 
+<!-- NAV -->
+<div class="nav-wrap">
+  <div class="nav" id="navBar">
 
-<div
-    class="music-player"
-    id="musicPlayer"
-    onclick="toggleMusicPanel()">
-
-    <div class="music-icon">
-        ♪
+    <div class="nav-brand">
+      <span class="nav-brand-mark"></span>
+      MIROR SMP
     </div>
 
-    <div class="music-info">
-
-        <div class="music-title">
-            MIROR SMP — Theme
-        </div>
-
-        <div
-            class="music-status"
-            id="musicStatus">
-
-            Loading...
-
-        </div>
-
+    <div class="nav-links">
+      <a href="#tentang">Tentang</a>
+      <a href="#rank">Rank</a>
+      <a href="#item">Item</a>
+      <a href="#layanan">Backup</a>
+      <a href="#support">Donate</a>
+      <a href="#sosial">Sosial</a>
+      <a href="#kontak">Kontak</a>
     </div>
 
-    <button
-        class="music-control"
-        id="musicControl"
-        onclick="toggleMusic(event)">
+    <a href="#rank" class="nav-cta">Belanja</a>
 
-        ▶
+    <button class="nav-toggle" onclick="toggleMobileNav()">☰</button>
 
-    </button>
-
+  </div>
 </div>
 
+<div class="nav-mobile" id="mobileNav">
+  <a href="#tentang" onclick="closeMobileNav()">Tentang</a>
+  <a href="#rank" onclick="closeMobileNav()">Rank</a>
+  <a href="#item" onclick="closeMobileNav()">Item</a>
+  <a href="#layanan" onclick="closeMobileNav()">Backup 1.3</a>
+  <a href="#support" onclick="closeMobileNav()">Donate</a>
+  <a href="#sosial" onclick="closeMobileNav()">Sosial</a>
+  <a href="#kontak" onclick="closeMobileNav()">Kontak</a>
+</div>
 
-<!-- =========================
-     MENU
-========================= -->
+<!-- HERO -->
+<header class="hero" id="tentang">
 
-<button
-    class="menu-btn"
-    onclick="toggleSidebar()">
+  <div class="stars" id="stars"></div>
 
-    ☰
+  <div class="badge-pill">
+    <span class="dot"></span>
+    SEASON 1 · OFFICIAL STORE
+  </div>
 
-</button>
+  <h1>
+    Selamat Datang di
+    <span>MIROR SMP</span>
+  </h1>
 
+  <p class="hero-sub">
+    MIROR SMP hadir sebagai server survival dengan sistem ekonomi,
+    komunitas aktif, rank eksklusif, dan berbagai item spesial
+    untuk pengalaman bermain yang lebih seru.
+  </p>
 
-<aside
-    class="sidebar"
-    id="sidebar">
+  <div class="hero-cta">
+    <a href="#rank" class="btn btn-primary">
+      Lihat Rank →
+    </a>
 
-    <h2>
-        MIROR SMP
-    </h2>
+    <button class="btn btn-outline" onclick="copyIP()">
+      Salin IP Server
+    </button>
+  </div>
 
-    <div class="sidebar-subtitle">
-        Season 1 • Official Store
+  <div class="info-bar">
+
+    <div class="info-cell">
+      <span>Server IP</span>
+      <strong class="mono" id="ipChip">
+        miroredsmp.my.id
+      </strong>
     </div>
 
-
-    <div class="sidebar-title">
-        Store
+    <div class="info-cell">
+      <span>Port</span>
+      <strong class="mono">2045</strong>
     </div>
 
-
-    <button
-        class="sidebar-item"
-        onclick="goTo('rank')">
-
-        <div class="sidebar-icon">
-            👑
-        </div>
-
-        Rank
-
-    </button>
-
-
-    <button
-        class="sidebar-item"
-        onclick="goTo('item')">
-
-        <div class="sidebar-icon">
-            📦
-        </div>
-
-        Item
-
-    </button>
-
-
-    <button
-        class="sidebar-item"
-        onclick="openQRIS()">
-
-        <div class="sidebar-icon">
-            💳
-        </div>
-
-        Donate via QRIS
-
-    </button>
-
-
-    <div class="sidebar-title">
-        Community
+    <div class="info-cell">
+      <span>Platform</span>
+      <strong>Java & Bedrock</strong>
     </div>
 
-
-    <button
-        class="sidebar-item"
-        onclick="goTo('social')">
-
-        <div class="sidebar-icon">
-            🌐
-        </div>
-
-        Social
-
-    </button>
-
-
-    <button
-        class="sidebar-item"
-        onclick="goTo('contact')">
-
-        <div class="sidebar-icon">
-            📩
-        </div>
-
-        Contact
-
-    </button>
-
-</aside>
-
-
-<!-- =========================
-     HERO
-========================= -->
-
-<header class="hero">
-
-    <div
-        class="slideshow"
-        id="slideshow">
-
-        <img
-            class="slide active"
-            src="images/server1.jpg"
-            alt="MIROR SMP">
-
-        <img
-            class="slide"
-            src="images/server2.jpg"
-            alt="MIROR SMP">
-
-        <img
-            class="slide"
-            src="images/server3.jpg"
-            alt="MIROR SMP">
-
+    <div class="info-cell status">
+      <span>Status</span>
+      <strong>
+        <span class="status-live"></span>
+        Online
+      </strong>
     </div>
 
-
-    <h1>
-        MIROR SMP
-    </h1>
-
-
-    <p class="hero-description">
-
-        Survival • Economy • Community
-
-        <br>
-
-        Official Store MIROR SMP Season 1.
-        Dapatkan rank, item, dan dukung
-        perkembangan server.
-
-    </p>
-
-
-    <div class="server-info">
-
-        <div class="info-box">
-
-            <span>
-                SERVER IP
-            </span>
-
-            <strong>
-                miroredsmp.my.id
-            </strong>
-
-        </div>
-
-
-        <div class="info-box">
-
-            <span>
-                PORT
-            </span>
-
-            <strong>
-                2045
-            </strong>
-
-        </div>
-
-
-        <div class="info-box">
-
-            <span>
-                PLATFORM
-            </span>
-
-            <strong>
-                Java & Bedrock
-            </strong>
-
-        </div>
-
-    </div>
+  </div>
 
 </header>
 
+<!-- TENTANG -->
+<section id="detail">
 
-<!-- =========================
-     RANK
-========================= -->
+  <div class="sec-head reveal">
+    <div>
+      <span class="sec-tag">Tentang Server</span>
+      <h2>Detail MIROR SMP</h2>
+    </div>
 
+    <p>
+      Informasi singkat mengenai server MIROR SMP.
+    </p>
+  </div>
+
+  <div class="about-card reveal">
+
+    <p>
+      MIROR SMP adalah server survival bertema komunitas
+      dengan sistem ekonomi, rank berjenjang, crate key,
+      serta berbagai fitur tambahan untuk pemain.
+    </p>
+
+    <div class="about-grid">
+
+      <div class="about-cell">
+        <span>IP</span>
+        <strong class="mono">miroredsmp.my.id</strong>
+      </div>
+
+      <div class="about-cell">
+        <span>Port</span>
+        <strong class="mono">2045</strong>
+      </div>
+
+      <div class="about-cell">
+        <span>Mode</span>
+        <strong>Survival · Economy</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- RANK -->
 <section id="rank">
 
-    <div class="section-title">
+  <div class="sec-head reveal">
+    <div>
+      <span class="sec-tag">Store</span>
+      <h2>Rank</h2>
+    </div>
 
-        <h2>
-            Rank
-        </h2>
+    <p>
+      Tekan "Lihat Benefit" untuk melihat fitur setiap rank.
+    </p>
+  </div>
 
-        <p>
-            Klik untuk melihat benefit
-            setiap rank.
-        </p>
+  <div class="grid reveal">
+
+    <div class="card">
+      <div class="card-icon">⚔️</div>
+      <h3>Baron</h3>
+      <p class="card-desc">
+        Rank awal dengan berbagai fitur tambahan.
+      </p>
+      <div class="card-price mono">Rp20.000</div>
+      <button class="card-btn" onclick="showRank('Baron')">
+        LIHAT BENEFIT
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🛡️</div>
+      <h3>Viscount</h3>
+      <p class="card-desc">
+        Upgrade dari Baron dengan akses Fly.
+      </p>
+      <div class="card-price mono">Rp30.000</div>
+      <button class="card-btn" onclick="showRank('Viscount')">
+        LIHAT BENEFIT
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">💠</div>
+      <h3>Earl</h3>
+      <p class="card-desc">
+        Mendapat Ender Chest dan Heal.
+      </p>
+      <div class="card-price mono">Rp45.000</div>
+      <button class="card-btn" onclick="showRank('Earl')">
+        LIHAT BENEFIT
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">💎</div>
+      <h3>Marquess</h3>
+      <p class="card-desc">
+        Rank lanjutan dengan Nick, Time dan Weather.
+      </p>
+      <div class="card-price mono">Rp60.000</div>
+      <button class="card-btn" onclick="showRank('Marquess')">
+        LIHAT BENEFIT
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🏆</div>
+      <h3>Duke</h3>
+      <p class="card-desc">
+        Rank premium dengan Teleport dan Effect.
+      </p>
+      <div class="card-price mono">Rp100.000</div>
+      <button class="card-btn" onclick="showRank('Duke')">
+        LIHAT BENEFIT
+      </button>
+    </div>
+
+    <div class="card soon">
+
+      <div class="ribbon">
+        SOON
+      </div>
+
+      <div class="card-icon">👑</div>
+
+      <h3>King</h3>
+
+      <p class="card-desc">
+        Rank tertinggi MIROR SMP.
+      </p>
+
+      <div class="card-price mono">
+        Rp200.000
+      </div>
+
+      <button class="card-btn" disabled>
+        COMING SOON
+      </button>
 
     </div>
 
-
-    <div class="products">
-
-
-        <div class="product">
-
-            <div class="product-icon">
-                ⚔️
-            </div>
-
-            <h3>
-                Baron
-            </h3>
-
-            <p class="product-description">
-                Rank awal dengan berbagai
-                fitur tambahan.
-            </p>
-
-            <div class="price">
-                Rp20.000
-            </div>
-
-            <button
-                class="product-btn"
-                onclick="showRank('Baron')">
-
-                LIHAT BENEFIT
-
-            </button>
-
-        </div>
-
-
-        <div class="product">
-
-            <div class="product-icon">
-                🛡️
-            </div>
-
-            <h3>
-                Viscount
-            </h3>
-
-            <p class="product-description">
-                Semua fitur Baron dengan
-                tambahan Fly.
-            </p>
-
-            <div class="price">
-                Rp30.000
-            </div>
-
-            <button
-                class="product-btn"
-                onclick="showRank('Viscount')">
-
-                LIHAT BENEFIT
-
-            </button>
-
-        </div>
-
-
-        <div class="product">
-
-            <div class="product-icon">
-                👑
-            </div>
-
-            <h3>
-                Earl
-            </h3>
-
-            <p class="product-description">
-                Fitur lengkap dengan
-                Ender Chest dan Heal.
-            </p>
-
-            <div class="price">
-                Rp45.000
-            </div>
-
-            <button
-                class="product-btn"
-                onclick="showRank('Earl')">
-
-                LIHAT BENEFIT
-
-            </button>
-
-        </div>
-
-
-        <div class="product">
-
-            <div class="product-icon">
-                💎
-            </div>
-
-            <h3>
-                Marquess
-            </h3>
-
-            <p class="product-description">
-                Fitur lanjutan dengan Nick,
-                Time dan Weather.
-            </p>
-
-            <div class="price">
-                Rp60.000
-            </div>
-
-            <button
-                class="product-btn"
-                onclick="showRank('Marquess')">
-
-                LIHAT BENEFIT
-
-            </button>
-
-        </div>
-
-
-        <div class="product">
-
-            <div class="product-icon">
-                🏆
-            </div>
-
-            <h3>
-                Duke
-            </h3>
-
-            <p class="product-description">
-                Rank premium dengan
-                TP dan Effect.
-            </p>
-
-            <div class="price">
-                Rp100.000
-            </div>
-
-            <button
-                class="product-btn"
-                onclick="showRank('Duke')">
-
-                LIHAT BENEFIT
-
-            </button>
-
-        </div>
-
-
-        <div class="product">
-
-            <div class="product-icon">
-                👑
-            </div>
-
-            <h3>
-                King
-            </h3>
-
-            <p class="product-description">
-                Rank tertinggi MIROR SMP.
-            </p>
-
-            <div class="price">
-                Rp200.000
-            </div>
-
-            <button
-                class="product-btn"
-                disabled>
-
-                COMING SOON
-
-            </button>
-
-        </div>
-
-    </div>
+  </div>
 
 </section>
 
-
-<!-- =========================
-     ITEM
-========================= -->
-
+<!-- ITEM -->
 <section id="item">
 
-    <div class="section-title">
-
-        <h2>
-            Item
-        </h2>
-
-        <p>
-            Item khusus untuk kebutuhan
-            petualanganmu.
-        </p>
-
+  <div class="sec-head reveal">
+    <div>
+      <span class="sec-tag">Store</span>
+      <h2>Item</h2>
     </div>
 
+    <p>
+      Key crate spesial MIROR SMP.
+    </p>
+  </div>
 
-    <div class="products">
+  <div class="grid reveal">
 
-
-        <div class="product">
-
-            <div class="product-icon">
-                🔑
-            </div>
-
-            <h3>
-                Miror Key
-            </h3>
-
-            <p class="product-description">
-                Kunci crate spesial
-                MIROR SMP.
-            </p>
-
-            <div class="price">
-                Rp5.000
-            </div>
-
-            <button
-                class="product-btn"
-                onclick="buyItem('Miror Key', 5000)">
-
-                BELI SEKARANG
-
-            </button>
-
-        </div>
-
-
-        <div class="product">
-
-            <div class="product-icon">
-                📦
-            </div>
-
-            <h3>
-                Custom Item
-            </h3>
-
-            <p class="product-description">
-                Item khusus atau kebutuhan
-                lainnya.
-            </p>
-
-            <div class="price">
-                Custom
-            </div>
-
-            <button
-                class="product-btn"
-                onclick="contactOwner()">
-
-                HUBUNGI ADMIN
-
-            </button>
-
-        </div>
-
+    <div class="card">
+      <div class="card-icon">🔑</div>
+      <h3>Excellent Miror Key</h3>
+      <p class="card-desc">
+        Key crate dengan hadiah menarik.
+      </p>
+      <div class="card-price mono">Rp5.000</div>
+      <button
+        class="card-btn"
+        onclick="buyItem('Excellent Miror Key',5000)">
+        BELI SEKARANG
+      </button>
     </div>
+
+    <div class="card">
+      <div class="card-icon">🗝️</div>
+      <h3>Deluxe Miror Key</h3>
+      <p class="card-desc">
+        Key crate dengan hadiah lebih baik.
+      </p>
+      <div class="card-price mono">Rp10.000</div>
+      <button
+        class="card-btn"
+        onclick="buyItem('Deluxe Miror Key',10000)">
+        BELI SEKARANG
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🎴</div>
+      <h3>The Alter Ego Key</h3>
+      <p class="card-desc">
+        Key crate premium dengan hadiah eksklusif.
+      </p>
+      <div class="card-price mono">Rp20.000</div>
+      <button
+        class="card-btn"
+        onclick="buyItem('The Alter Ego Key',20000)">
+        BELI SEKARANG
+      </button>
+    </div>
+
+  </div>
 
 </section>
 
+<!-- BACKUP -->
+<section id="layanan">
 
-<!-- =========================
-     SOCIAL
-========================= -->
+  <div class="sec-head reveal">
+    <div>
+      <span class="sec-tag">Informasi</span>
+      <h2>Backup 1.3</h2>
+    </div>
 
-<section id="social">
+    <p>
+      Dokumentasi Backup 1.3 MIROR SMP.
+    </p>
+  </div>
 
-    <div class="section-title">
+  <div class="card backup-card reveal">
 
-        <h2>
-            Social
-        </h2>
+    <div class="backup-slider">
 
-        <p>
-            Bergabung dengan komunitas
-            MIROR SMP.
-        </p>
+      <img
+        class="backup-slide active"
+        src="backup1.png"
+        alt="Backup 1.3"
+      >
+
+      <img
+        class="backup-slide"
+        src="backup2.png"
+        alt="Backup 1.3"
+      >
+
+      <img
+        class="backup-slide"
+        src="backup3.png"
+        alt="Backup 1.3"
+      >
+
+      <div class="backup-dots">
+
+        <span class="backup-dot active"></span>
+        <span class="backup-dot"></span>
+        <span class="backup-dot"></span>
+
+      </div>
 
     </div>
 
+    <div class="backup-body">
 
-    <div class="social">
+      <h3>Backup 1.3</h3>
 
-        <a
-            class="social-card"
-            href="https://chat.whatsapp.com/HqUCYohXg105gIWxIAbXEX?s=cl&p=a&ilr=0"
-            target="_blank">
-
-            <small>
-                WHATSAPP
-            </small>
-
-            Group MIROR SMP
-
-        </a>
-
-
-        <a
-            class="social-card"
-            href="#"
-            target="_blank">
-
-            <small>
-                DISCORD
-            </small>
-
-            MIROR SMP Community
-
-        </a>
-
-
-        <a
-            class="social-card"
-            href="#"
-            target="_blank">
-
-            <small>
-                VOTE
-            </small>
-
-            Vote MIROR SMP
-
-        </a>
+      <p class="card-desc">
+        Dokumentasi Backup 1.3 MIROR SMP.
+        Gambar akan berganti otomatis setiap 2 detik.
+      </p>
 
     </div>
+
+  </div>
 
 </section>
 
+<!-- DONATE -->
+<section id="support">
 
-<!-- =========================
-     CONTACT
-========================= -->
+  <div class="sec-head reveal">
 
-<section id="contact">
+    <div>
+      <span class="sec-tag">Support</span>
+      <h2>Donate</h2>
+    </div>
 
-    <div class="section-title">
+    <p>
+      Dukung perkembangan MIROR SMP.
+    </p>
 
-        <h2>
-            Contact
-        </h2>
+  </div>
 
-        <p>
-            Hubungi Owner untuk bantuan
-            atau pembelian.
-        </p>
+  <div class="grid reveal">
+
+    <div class="card">
+
+      <div class="card-icon">💳</div>
+
+      <h3>Donate via QRIS</h3>
+
+      <p class="card-desc">
+        Donasi dengan nominal bebas melalui QRIS.
+      </p>
+
+      <div class="card-price mono">
+        Bebas Nominal
+      </div>
+
+      <button
+        class="card-btn solid"
+        onclick="openQRIS()">
+        DONATE SEKARANG
+      </button>
 
     </div>
 
-
-    <div class="contact-box">
-
-        <div class="contact-row">
-
-            <span>
-                OWNER
-            </span>
-
-            MIROR SMP
-
-        </div>
-
-
-        <div class="contact-row">
-
-            <span>
-                WHATSAPP
-            </span>
-
-            6285743003734
-
-        </div>
-
-
-        <div class="contact-row">
-
-            <span>
-                EMAIL
-            </span>
-
-            admin@miroredsmp.my.id
-
-        </div>
-
-    </div>
+  </div>
 
 </section>
 
+<!-- SOCIAL -->
+<section id="sosial">
 
-<!-- =========================
-     MODAL
-========================= -->
+  <div class="sec-head reveal">
 
-<div
-    class="modal"
-    id="modal">
+    <div>
+      <span class="sec-tag">Komunitas</span>
+      <h2>Sosial</h2>
+    </div>
 
-    <div class="modal-box">
+    <p>
+      Ikuti sosial media MIROR SMP.
+    </p>
 
-        <button
-            class="close"
-            onclick="closeModal()">
+  </div>
 
-            ×
+  <div class="social-row reveal">
 
-        </button>
+    <a
+      class="social-chip"
+      href="https://chat.whatsapp.com/HqUCYohXg105gIWxIAbXEX?s=cl&p=a&ilr=0"
+      target="_blank"
+      rel="noopener">
 
+      <img
+        class="social-icon"
+        src="wa.png"
+        alt="WhatsApp">
 
-        <div id="modalContent"></div>
+      <div>
+        <small>WHATSAPP</small>
+        <b>Group MIROR SMP</b>
+      </div>
+
+    </a>
+
+    <a
+      class="social-chip"
+      href="#"
+      target="_blank"
+      rel="noopener">
+
+      <img
+        class="social-icon"
+        src="dc.png"
+        alt="Discord">
+
+      <div>
+        <small>DISCORD</small>
+        <b>MIROR SMP Community</b>
+      </div>
+
+    </a>
+
+    <a
+      class="social-chip"
+      href="#"
+      target="_blank"
+      rel="noopener">
+
+      <img
+        class="social-icon"
+        src="yt.png"
+        alt="YouTube">
+
+      <div>
+        <small>YOUTUBE</small>
+        <b>MIROR SMP Official</b>
+      </div>
+
+    </a>
+
+    <a
+      class="social-chip"
+      href="#"
+      target="_blank"
+      rel="noopener">
+
+      <img
+        class="social-icon"
+        src="ig.png"
+        alt="Instagram">
+
+      <div>
+        <small>INSTAGRAM</small>
+        <b>@mirorsmp</b>
+      </div>
+
+    </a>
+
+    <a
+      class="social-chip"
+      href="#"
+      target="_blank"
+      rel="noopener">
+
+      <img
+        class="social-icon"
+        src="tt.png"
+        alt="TikTok">
+
+      <div>
+        <small>TIKTOK</small>
+        <b>@mirorsmp</b>
+      </div>
+
+    </a>
+
+  </div>
+
+</section>
+
+<!-- CONTACT -->
+<section id="kontak">
+
+  <div class="sec-head reveal">
+
+    <div>
+      <span class="sec-tag">Kontak</span>
+      <h2>Three Founder</h2>
+    </div>
+
+    <p>
+      Hubungi founder MIROR SMP.
+    </p>
+
+  </div>
+
+  <div class="grid reveal">
+
+    <div class="card">
+
+      <span class="founder-tag">
+        FOUNDER · OPERASIONAL
+      </span>
+
+      <div class="card-icon">🛠️</div>
+
+      <h3>Founder I</h3>
+
+      <p class="card-desc">
+        Pembelian, pembayaran dan pertanyaan store.
+      </p>
+
+      <button
+        class="card-btn"
+        onclick="contactPerson('admin')">
+        CHAT FOUNDER I
+      </button>
 
     </div>
+
+    <div class="card">
+
+      <span class="founder-tag">
+        FOUNDER · TEKNIS
+      </span>
+
+      <div class="card-icon">💻</div>
+
+      <h3>Founder II</h3>
+
+      <p class="card-desc">
+        Bug, plugin dan kebutuhan teknis server.
+      </p>
+
+      <button
+        class="card-btn"
+        onclick="contactPerson('developer')">
+        CHAT FOUNDER II
+      </button>
+
+    </div>
+
+    <div class="card">
+
+      <span class="founder-tag">
+        FOUNDER · PIMPINAN
+      </span>
+
+      <div class="card-icon">👑</div>
+
+      <h3>Founder III</h3>
+
+      <p class="card-desc">
+        Kerjasama, sponsor dan hal penting lainnya.
+      </p>
+
+      <button
+        class="card-btn"
+        onclick="contactPerson('founder')">
+        CHAT FOUNDER III
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="email-row mono">
+    ✉
+    <b>admin@miroredsmp.my.id</b>
+  </div>
+
+</section>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-top">
+
+      <span>MIROR SMP</span>
+
+      <button
+        class="modal-close"
+        onclick="closeModal()">
+        ×
+      </button>
+
+    </div>
+
+    <div
+      class="modal-content"
+      id="modalContent">
+    </div>
+
+  </div>
 
 </div>
 
+<!-- MUSIC -->
+<div
+  class="music"
+  id="musicPlayer"
+  onclick="toggleMusicPanel()">
+
+  <div class="music-icon">
+    ♪
+  </div>
+
+  <div class="music-info">
+
+    <div class="music-title">
+      MIROR SMP — Theme
+    </div>
+
+    <div
+      class="music-status mono"
+      id="musicStatus">
+      Loading...
+    </div>
+
+  </div>
+
+  <button
+    class="music-ctrl"
+    id="musicControl"
+    onclick="toggleMusic(event)">
+    ▶
+  </button>
+
+</div>
 
 <footer>
-
-    © 2026 MIROR SMP
-    • Season 1
-
-    <br>
-
-    Not affiliated with Mojang Studios.
-
+  © 2026 MIROR SMP · SEASON 1
+  — TIDAK BERAFILIASI DENGAN MOJANG STUDIOS
 </footer>
-
 
 <script>
 
-/* =========================
-   CONFIG
-========================= */
-
-const OWNER =
-    "6285743003734";
-
-
-/* =========================
-   SIDEBAR
-========================= */
-
-function toggleSidebar() {
-
-    document
-        .getElementById("sidebar")
-        .classList.toggle("active");
-
-}
-
-
-function goTo(id) {
-
-    document
-        .getElementById("sidebar")
-        .classList.remove("active");
-
-    document
-        .getElementById(id)
-        .scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-}
-
-
-/* =========================
-   SLIDESHOW
-========================= */
-
-const slides =
-    document.querySelectorAll(".slide");
-
-let currentSlide = 0;
-
-if (slides.length > 1) {
-
-    setInterval(() => {
-
-        slides[currentSlide]
-            .classList.remove("active");
-
-        currentSlide =
-            (currentSlide + 1) %
-            slides.length;
-
-        slides[currentSlide]
-            .classList.add("active");
-
-    }, 2000);
-
-}
-
-
-/* =========================
-   MUSIC
-========================= */
-
-const music =
-    document.getElementById("bgMusic");
-
-const musicPlayer =
-    document.getElementById("musicPlayer");
-
-const musicControl =
-    document.getElementById("musicControl");
-
-const musicStatus =
-    document.getElementById("musicStatus");
-
-
-function toggleMusicPanel() {
-
-    musicPlayer
-        .classList
-        .toggle("active");
-
-}
-
-
-function toggleMusic(event) {
-
-    event.stopPropagation();
-
-    if (music.paused) {
-
-        music.play()
-            .then(() => {
-
-                musicControl.textContent =
-                    "Ⅱ";
-
-                musicStatus.textContent =
-                    "Playing";
-
-            })
-            .catch(() => {
-
-                musicStatus.textContent =
-                    "Klik ▶ untuk mulai";
-
-            });
-
-    } else {
-
-        music.pause();
-
-        musicControl.textContent =
-            "▶";
-
-        musicStatus.textContent =
-            "Paused";
-
-    }
-
-}
-
-
-music.addEventListener(
-    "play",
-    () => {
-
-        musicControl.textContent =
-            "Ⅱ";
-
-        musicStatus.textContent =
-            "Playing";
-
-    }
-);
-
-
-music.addEventListener(
-    "pause",
-    () => {
-
-        musicControl.textContent =
-            "▶";
-
-        musicStatus.textContent =
-            "Paused";
-
-    }
-);
-
-
-/* Autoplay attempt */
-
-window.addEventListener(
-    "load",
-    () => {
-
-        music.play()
-            .then(() => {
-
-                musicControl.textContent =
-                    "Ⅱ";
-
-                musicStatus.textContent =
-                    "Playing";
-
-            })
-            .catch(() => {
-
-                musicStatus.textContent =
-                    "Klik ▶ untuk mulai";
-
-            });
-
-    }
-);
-
-
-/* =========================
-   RANK DATA
-========================= */
-
-const ranks = {
-
-    Baron: {
-        price: 20000,
-
-        benefits: [
-            "Repair",
-            "Food",
-            "Sethome 5",
-            "Kit Baron",
-            "Money 100K"
-        ]
-    },
-
-    Viscount: {
-        price: 30000,
-
-        benefits: [
-            "Semua benefit Baron",
-            "Fly",
-            "Sethome 8",
-            "Kit Viscount",
-            "Money 400K"
-        ]
-    },
-
-    Earl: {
-        price: 45000,
-
-        benefits: [
-            "Semua benefit Viscount",
-            "Ender Chest",
-            "Heal",
-            "Sethome 12",
-            "Kit Earl",
-            "Money 1M"
-        ]
-    },
-
-    Marquess: {
-        price: 60000,
-
-        benefits: [
-            "Semua benefit Earl",
-            "Nick",
-            "Time Set",
-            "Weather Set",
-            "Sethome 18",
-            "Kit Marquess",
-            "Money 3M"
-        ]
-    },
-
-    Duke: {
-        price: 100000,
-
-        benefits: [
-            "Semua benefit Marquess",
-            "Teleport",
-            "Effect",
-            "Sethome 25",
-            "Kit Duke",
-            "Money 6M"
-        ]
-    },
-
-    King: {
-        price: 200000,
-
-        benefits: [
-            "Coming Soon"
-        ],
-
-        comingSoon: true
-    }
+/* CONFIG */
+
+const CONTACTS = {
+
+  admin:{
+    number:"6287768560909",
+    label:"Founder I"
+  },
+
+  developer:{
+    number:"6287829530306",
+    label:"Founder II"
+  },
+
+  founder:{
+    number:"6285743003734",
+    label:"Founder III"
+  }
 
 };
 
 
-/* =========================
-   FORMAT PRICE
-========================= */
+/* MOBILE NAV */
 
-function formatRupiah(value) {
+function toggleMobileNav(){
 
-    return "Rp" +
-        Number(value)
-        .toLocaleString("id-ID");
+  document
+    .getElementById("mobileNav")
+    .classList.toggle("active");
+
+}
+
+function closeMobileNav(){
+
+  document
+    .getElementById("mobileNav")
+    .classList.remove("active");
 
 }
 
 
-/* =========================
-   RANK MODAL
-========================= */
+/* NAV SCROLL */
 
-function showRank(rank) {
+window.addEventListener("scroll",()=>{
 
-    const data =
-        ranks[rank];
+  document
+    .getElementById("navBar")
+    .classList.toggle(
+      "scrolled",
+      window.scrollY > 20
+    );
 
-    if (!data) return;
-
-
-    const benefits =
-        data.benefits
-        .map(
-            (item, index) =>
-                `<div
-                    class="benefit"
-                    style="animation-delay:${index * 35}ms">
-                    ${item}
-                </div>`
-        )
-        .join("");
+});
 
 
-    let button;
+/* COPY IP */
 
+function copyIP(){
 
-    if (data.comingSoon) {
+  const ip="miroredsmp.my.id:2045";
 
-        button = `
-            <button
-                class="product-btn"
-                disabled>
+  navigator.clipboard
+    .writeText(ip)
+    .then(()=>{
 
-                COMING SOON
+      const chip=
+        document.getElementById("ipChip");
 
-            </button>
-        `;
+      const old=chip.textContent;
 
-    } else {
+      chip.textContent="Tersalin ✓";
 
-        button = `
-            <button
-                class="buy-btn"
-                onclick="buyRank('${rank}')">
+      setTimeout(()=>{
 
-                BELI SEKARANG
+        chip.textContent=old;
 
-            </button>
-        `;
+      },1600);
 
-    }
-
-
-    document
-        .getElementById("modalContent")
-        .innerHTML = `
-
-            <div class="modal-label">
-                MIROR SMP • RANK
-            </div>
-
-            <h2>
-                ${rank}
-            </h2>
-
-            <div class="benefits">
-                ${benefits}
-            </div>
-
-            <div class="modal-price">
-                ${formatRupiah(data.price)}
-            </div>
-
-            ${button}
-
-        `;
-
-
-    openModal();
+    })
+    .catch(()=>{});
 
 }
 
 
-/* =========================
-   BUY RANK
-========================= */
+/* STARS */
 
-function buyRank(rank) {
+(function(){
 
-    const data =
-        ranks[rank];
+  const wrap=
+    document.getElementById("stars");
 
-    const message =
-        `Halo Owner MIROR SMP,
+  for(let i=0;i<45;i++){
+
+    const star=
+      document.createElement("div");
+
+    star.className="star";
+
+    star.style.left=
+      Math.random()*100+"%";
+
+    star.style.top=
+      Math.random()*100+"%";
+
+    star.style.animationDuration=
+      2+Math.random()*4+"s";
+
+    star.style.animationDelay=
+      Math.random()*4+"s";
+
+    wrap.appendChild(star);
+
+  }
+
+})();
+
+
+/* SCROLL REVEAL */
+
+const revealEls=
+  document.querySelectorAll(".reveal");
+
+const observer=
+  new IntersectionObserver(
+    entries=>{
+
+      entries.forEach(entry=>{
+
+        if(entry.isIntersecting){
+
+          entry.target
+            .classList
+            .add("visible");
+
+          observer.unobserve(
+            entry.target
+          );
+
+        }
+
+      });
+
+    },
+    {threshold:.15}
+  );
+
+revealEls.forEach(el=>
+  observer.observe(el)
+);
+
+
+/* RANK DATA */
+
+const ranks={
+
+  Baron:{
+    price:20000,
+    benefits:[
+      "Repair",
+      "Food",
+      "Sethome 5",
+      "Kit Baron",
+      "Money 100K"
+    ]
+  },
+
+  Viscount:{
+    price:30000,
+    benefits:[
+      "Semua benefit Baron",
+      "Fly",
+      "Sethome 8",
+      "Kit Viscount",
+      "Money 400K"
+    ]
+  },
+
+  Earl:{
+    price:45000,
+    benefits:[
+      "Semua benefit Viscount",
+      "Ender Chest",
+      "Heal",
+      "Sethome 12",
+      "Kit Earl",
+      "Money 1M"
+    ]
+  },
+
+  Marquess:{
+    price:60000,
+    benefits:[
+      "Semua benefit Earl",
+      "Nick",
+      "Time Set",
+      "Weather Set",
+      "Sethome 18",
+      "Kit Marquess",
+      "Money 3M"
+    ]
+  },
+
+  Duke:{
+    price:100000,
+    benefits:[
+      "Semua benefit Marquess",
+      "Teleport",
+      "Effect",
+      "Sethome 25",
+      "Kit Duke",
+      "Money 6M"
+    ]
+  },
+
+  King:{
+    price:200000,
+    benefits:["Coming Soon"],
+    comingSoon:true
+  }
+
+};
+
+
+/* RUPIAH */
+
+function formatRupiah(value){
+
+  return "Rp"+
+    Number(value)
+      .toLocaleString("id-ID");
+
+}
+
+
+/* SHOW RANK */
+
+function showRank(rank){
+
+  const data=ranks[rank];
+
+  if(!data)return;
+
+  const benefits=
+    data.benefits
+      .map(item=>
+        `<div class="benefit-row">
+          ${item}
+        </div>`
+      )
+      .join("");
+
+  let button="";
+
+  if(data.comingSoon){
+
+    button=
+      `<button class="card-btn" disabled>
+        COMING SOON
+      </button>`;
+
+  }else{
+
+    button=
+      `<button
+        class="card-btn solid"
+        onclick="buyRank('${rank}')">
+        BELI SEKARANG
+      </button>`;
+
+  }
+
+  document
+    .getElementById("modalContent")
+    .innerHTML=`
+
+      <span class="sec-tag">
+        RANK
+      </span>
+
+      <h2>${rank}</h2>
+
+      <div class="benefit-list">
+        ${benefits}
+      </div>
+
+      <div class="modal-price mono">
+        ${formatRupiah(data.price)}
+      </div>
+
+      ${button}
+
+    `;
+
+  openModal();
+
+}
+
+
+/* BUY RANK */
+
+function buyRank(rank){
+
+  const data=ranks[rank];
+
+  const message=
+`Halo Founder MIROR SMP,
 
 Saya ingin membeli Rank ${rank}.
 Nominal: ${formatRupiah(data.price)}
 
 Mohon info pembayaran.`;
 
-    window.open(
-        "https://wa.me/" +
-        OWNER +
-        "?text=" +
-        encodeURIComponent(message),
-        "_blank"
-    );
+  window.open(
+    "https://wa.me/"+
+    CONTACTS.admin.number+
+    "?text="+
+    encodeURIComponent(message),
+    "_blank"
+  );
 
 }
 
 
-/* =========================
-   BUY ITEM
-========================= */
+/* BUY ITEM */
 
-function buyItem(
-    item,
-    price
-) {
+function buyItem(item,price){
 
-    const message =
-        `Halo Owner MIROR SMP,
+  const message=
+`Halo Founder MIROR SMP,
 
-Saya ingin membeli ${item}.
+Saya ingin memesan ${item}.
 Nominal: ${formatRupiah(price)}
 
 Mohon info pembayaran.`;
 
-    window.open(
-        "https://wa.me/" +
-        OWNER +
-        "?text=" +
-        encodeURIComponent(message),
-        "_blank"
-    );
+  window.open(
+    "https://wa.me/"+
+    CONTACTS.admin.number+
+    "?text="+
+    encodeURIComponent(message),
+    "_blank"
+  );
 
 }
 
 
-/* =========================
-   QRIS
-========================= */
+/* QRIS */
 
-function openQRIS() {
+function openQRIS(){
 
-    document
-        .getElementById("sidebar")
-        .classList.remove("active");
+  document
+    .getElementById("modalContent")
+    .innerHTML=`
 
+      <span class="sec-tag">
+        DONATE
+      </span>
 
-    document
-        .getElementById("modalContent")
-        .innerHTML = `
+      <h2>Donate via QRIS</h2>
 
-            <div class="modal-label">
-                MIROR SMP • SUPPORT
-            </div>
+      <img
+        src="qr.png"
+        class="qris-img"
+        alt="QRIS MIROR SMP">
 
-            <h2>
-                Donate via QRIS
-            </h2>
+      <div class="qris-note">
 
-            <img
-                src="qr.png"
-                class="qris-img"
-                alt="QRIS MIROR SMP">
+        Scan QRIS untuk melakukan
+        pembayaran atau donasi.
 
-            <div class="qris-note">
+        <br><br>
 
-                Scan QRIS untuk melakukan
-                donasi atau pembayaran.
+        Setelah pembayaran selesai,
+        tekan tombol di bawah dan
+        kirim bukti pembayaran
+        kepada Founder.
 
-                <br><br>
+      </div>
 
-                Setelah pembayaran selesai,
-                tekan tombol di bawah dan
-                kirim bukti pembayaran
-                kepada Owner.
+      <button
+        class="card-btn solid"
+        onclick="paymentDone()">
 
-            </div>
+        SUDAH BAYAR
 
-            <button
-                class="buy-btn"
-                onclick="paymentDone()">
+      </button>
 
-                SUDAH BAYAR
+    `;
 
-            </button>
-
-        `;
-
-
-    openModal();
+  openModal();
 
 }
 
 
-/* =========================
-   PAYMENT DONE
-========================= */
+/* PAYMENT DONE */
 
-function paymentDone() {
+function paymentDone(){
 
-    const message =
-        `Halo Owner MIROR SMP,
+  const message=
+`Halo Founder MIROR SMP,
 
 Saya sudah melakukan pembayaran melalui QRIS.
 
@@ -2290,106 +2013,244 @@ Saya akan mengirimkan bukti pembayaran di chat ini.
 
 Mohon dicek. Terima kasih.`;
 
-    window.open(
-        "https://wa.me/" +
-        OWNER +
-        "?text=" +
-        encodeURIComponent(message),
-        "_blank"
-    );
+  window.open(
+    "https://wa.me/"+
+    CONTACTS.admin.number+
+    "?text="+
+    encodeURIComponent(message),
+    "_blank"
+  );
 
 }
 
 
-/* =========================
-   CONTACT
-========================= */
+/* CONTACT */
 
-function contactOwner() {
+function contactPerson(role){
 
-    const message =
-        "Halo Owner MIROR SMP, saya ingin bertanya mengenai store.";
+  const person=CONTACTS[role];
 
-    window.open(
-        "https://wa.me/" +
-        OWNER +
-        "?text=" +
-        encodeURIComponent(message),
-        "_blank"
-    );
+  if(!person)return;
 
-}
+  const message=
+`Halo ${person.label} MIROR SMP,
 
+Saya ingin bertanya mengenai store.`;
 
-/* =========================
-   MODAL
-========================= */
-
-function openModal() {
-
-    document
-        .getElementById("modal")
-        .classList.add("active");
-
-    document.body
-        .classList.add("no-scroll");
+  window.open(
+    "https://wa.me/"+
+    person.number+
+    "?text="+
+    encodeURIComponent(message),
+    "_blank"
+  );
 
 }
 
 
-function closeModal() {
+/* MODAL */
 
-    document
-        .getElementById("modal")
-        .classList.remove("active");
+function openModal(){
 
-    document.body
-        .classList.remove("no-scroll");
+  document
+    .getElementById("modal")
+    .classList.add("active");
+
+  document.body.classList.add("locked");
 
 }
 
+function closeModal(){
+
+  document
+    .getElementById("modal")
+    .classList.remove("active");
+
+  document.body.classList.remove("locked");
+
+}
 
 document
-    .getElementById("modal")
-    .addEventListener(
-        "click",
-        function(event) {
+  .getElementById("modal")
+  .addEventListener("click",e=>{
 
-            if (
-                event.target === this
-            ) {
+    if(e.target===e.currentTarget){
 
-                closeModal();
-
-            }
-
-        }
-    );
-
-
-/* =========================
-   ESC
-========================= */
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key === "Escape"
-        ) {
-
-            closeModal();
-
-            document
-                .getElementById("sidebar")
-                .classList.remove(
-                    "active"
-                );
-
-        }
+      closeModal();
 
     }
+
+  });
+
+document.addEventListener(
+  "keydown",
+  e=>{
+
+    if(e.key==="Escape"){
+
+      closeModal();
+      closeMobileNav();
+
+    }
+
+  }
+);
+
+
+/* BACKUP SLIDESHOW */
+
+(function(){
+
+  const slides=
+    document.querySelectorAll(
+      ".backup-slide"
+    );
+
+  const dots=
+    document.querySelectorAll(
+      ".backup-dot"
+    );
+
+  if(slides.length<=1)return;
+
+  let index=0;
+
+  setInterval(()=>{
+
+    slides[index]
+      .classList
+      .remove("active");
+
+    if(dots[index]){
+
+      dots[index]
+        .classList
+        .remove("active");
+
+    }
+
+    index=
+      (index+1)%slides.length;
+
+    slides[index]
+      .classList
+      .add("active");
+
+    if(dots[index]){
+
+      dots[index]
+        .classList
+        .add("active");
+
+    }
+
+  },2000);
+
+})();
+
+
+/* MUSIC */
+
+const music=
+  document.getElementById("bgMusic");
+
+const musicPlayer=
+  document.getElementById("musicPlayer");
+
+const musicControl=
+  document.getElementById("musicControl");
+
+const musicStatus=
+  document.getElementById("musicStatus");
+
+
+function toggleMusicPanel(){
+
+  musicPlayer
+    .classList
+    .toggle("active");
+
+}
+
+
+function toggleMusic(event){
+
+  event.stopPropagation();
+
+  if(music.paused){
+
+    music.play()
+      .then(()=>{
+
+        musicControl.textContent="Ⅱ";
+        musicStatus.textContent="Playing";
+
+      })
+      .catch(()=>{
+
+        musicStatus.textContent=
+          "Klik ▶ untuk mulai";
+
+      });
+
+  }else{
+
+    music.pause();
+
+    musicControl.textContent="▶";
+    musicStatus.textContent="Paused";
+
+  }
+
+}
+
+
+music.addEventListener(
+  "play",
+  ()=>{
+
+    musicControl.textContent="Ⅱ";
+    musicStatus.textContent="Playing";
+
+  }
+);
+
+
+music.addEventListener(
+  "pause",
+  ()=>{
+
+    musicControl.textContent="▶";
+    musicStatus.textContent="Paused";
+
+  }
+);
+
+
+/*
+  Browser modern biasanya memblokir
+  autoplay audio sebelum ada interaksi user.
+*/
+
+window.addEventListener(
+  "load",
+  ()=>{
+
+    music.play()
+      .then(()=>{
+
+        musicControl.textContent="Ⅱ";
+        musicStatus.textContent="Playing";
+
+      })
+      .catch(()=>{
+
+        musicStatus.textContent=
+          "Klik ▶ untuk mulai";
+
+      });
+
+  }
 );
 
 </script>
